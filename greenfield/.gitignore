@@ -15,6 +15,10 @@ dist-ssr
 .env.*
 !.env.example
 *.tsbuildinfo
+test-results
+playwright-report
+screenshots
+/playwright/.cache
 
 # Editor directories and files
 .vscode/*

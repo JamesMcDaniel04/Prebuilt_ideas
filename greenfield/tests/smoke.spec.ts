@@ -9,6 +9,11 @@ import { test, expect } from "@playwright/test";
  */
 
 test.describe("Public shell", () => {
+  test("missing-config banner renders when env vars are placeholders", async ({ page }) => {
+    await page.goto("/");
+    await expect(page.getByText(/Supabase isn't configured/i)).toBeVisible();
+  });
+
   test("/ renders the hero and filter sidebar", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("heading", { level: 1 })).toContainText("Opportunities");

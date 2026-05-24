@@ -32,9 +32,8 @@ export default defineConfig({
     url: "http://localhost:5174",
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
-    env: {
-      VITE_SUPABASE_URL: process.env.VITE_SUPABASE_URL || "https://placeholder.supabase.co",
-      VITE_SUPABASE_ANON_KEY: process.env.VITE_SUPABASE_ANON_KEY || "placeholder-anon-key",
-    },
+    // No env injection — supabase.ts handles missing creds gracefully and the
+    // app renders the MissingConfigBanner. Pass real creds in your shell to
+    // run against a live Supabase project.
   },
 });

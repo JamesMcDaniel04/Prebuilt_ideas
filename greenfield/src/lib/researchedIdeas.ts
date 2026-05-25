@@ -270,6 +270,7 @@ const THEMES: Record<ThemeKey, ThemeDefinition> = {
       src("other", 145, "https://www.cms.gov/newsroom/fact-sheets/cms-interoperability-prior-authorization-final-rule-cms-0057-f", "CMS Interoperability and Prior Authorization Final Rule", "Federal deadlines now force payers and providers to operationalize more transparent authorization workflows."),
       src("other", 40, "https://www.cms.gov/newsroom/fact-sheets/2026-cms-interoperability-standards-prior-authorization-drugs-proposed-rule", "CMS proposed rule on interoperability standards and prior authorization for drugs", "Drug-related authorization APIs and standards remain an active policy area in 2026."),
       src("blog", 11, "https://www.ama-assn.org/practice-management/prior-authorization/ama-prior-authorization-physician-survey", "AMA prior authorization physician survey", "Recent survey data shows physicians still see high burden and low confidence in voluntary payer reform."),
+      src("reddit", 171, "https://www.reddit.com/r/medicine/comments/1pe3e7b/inappropriate_prior_auth_denial_patient_advocacy/", "r/medicine discussion on inappropriate prior authorization denials", "Clinicians openly describe prior auth appeals as nonsense work that pulls time away from patient care."),
     ],
   },
   accessibility: {
@@ -286,6 +287,7 @@ const THEMES: Record<ThemeKey, ThemeDefinition> = {
       src("other", 330, "https://accessible-eu-centre.ec.europa.eu/content-corner/news/new-era-inclusion-begins-eaa-enters-force-2025-06-27_en", "AccessibleEU on the EAA entering into force", "The legal trigger for digital-accessibility work is already live across Europe."),
       src("other", 240, "https://digital-strategy.ec.europa.eu/en/policies/web-accessibility", "European Commission web accessibility policy page", "European institutions continue to frame accessibility as an active policy and implementation domain."),
       src("other", 19, "https://www.w3.org/WAI/standards-guidelines/wcag/", "W3C WCAG 2 overview", "WCAG remains the shared technical standard buyers and delivery teams map accessibility work to."),
+      src("reddit", 92, "https://www.reddit.com/r/webdev/comments/1r50svh/is_or_should_web_accessibility_be_mandatory_2026/", "r/webdev discussion on mandatory web accessibility in 2026", "Developers are actively debating audits, tooling, and the compliance burden created by accessibility requirements."),
     ],
   },
   refrigerantTransition: {
@@ -302,6 +304,7 @@ const THEMES: Record<ThemeKey, ThemeDefinition> = {
       src("other", 9, "https://www.epa.gov/climate-hfcs-reduction/technology-transitions-program", "EPA Technology Transitions Program", "The regulatory transition away from higher-GWP HFCs is active and still evolving."),
       src("blog", 45, "https://www.ahrinet.org/a2l-video-series", "AHRI A2L video series", "Industry groups are still educating contractors, distributors, and inspectors on A2L handling and code changes."),
       src("blog", 22, "https://www.achrnews.com/articles/166001-a2ls-advance-despite-regulatory-uncertainty", "ACHR News on A2Ls advancing despite regulatory uncertainty", "Trade coverage shows the transition is underway even while operational uncertainty remains high."),
+      src("reddit", 329, "https://www.reddit.com/r/HVAC/comments/1lmy83h", "r/HVAC discussion on A2L tool and truck readiness", "Technicians are explicitly complaining about tool changes, costs, and install confusion tied to the A2L transition."),
     ],
   },
   leadLine: {
@@ -366,6 +369,7 @@ const THEMES: Record<ThemeKey, ThemeDefinition> = {
       src("other", 25, "https://www.fda.gov/food/food-safety-modernization-act-fsma/fsma-final-rule-requirements-additional-traceability-records-certain-foods", "FDA FSMA final rule for additional traceability records", "The core recordkeeping rule remains the central compliance anchor for covered foods."),
       src("other", 95, "https://www.fda.gov/food/hfp-constituent-updates/fda-takes-several-actions-related-food-traceability-rule", "FDA actions related to the Food Traceability Rule", "FDA is still investing in implementation materials and stakeholder engagement in 2026."),
       src("other", 120, "https://www.fda.gov/food/new-era-smarter-food-safety/tracking-and-tracing-food", "FDA tracking and tracing of food overview", "FDA continues to frame traceability as a strategic public-health capability rather than a paperwork exercise."),
+      src("reddit", 275, "https://www.reddit.com/r/manufacturing/comments/1mx5ele/fsma_204/", "r/manufacturing discussion on FSMA 204 paperwork and tracking", "Operators are openly describing ERP gaps, paperwork pain, and retrieval worries around FSMA 204."),
     ],
   },
   droneCompliance: {
@@ -382,6 +386,7 @@ const THEMES: Record<ThemeKey, ThemeDefinition> = {
       src("other", 430, "https://www.faa.gov/uas/getting_started/remote_id", "FAA Remote Identification of Drones", "Remote ID is now a baseline requirement for registered drone operations."),
       src("other", 70, "https://www.faa.gov/uas/commercial_operators/part_107_waivers", "FAA Part 107 waivers", "Waivers remain a live path for operations outside standard Part 107 limits."),
       src("other", 60, "https://www.faa.gov/uas/commercial_operators/part_107_airspace_authorizations", "FAA Part 107 airspace authorizations", "Commercial operators still need a formal pathway for controlled-airspace approvals."),
+      src("reddit", 300, "https://www.reddit.com/r/fpv/comments/1ls2nx6/asking_all_us_fpv_flyers_about_remote_id/", "r/fpv discussion on Remote ID compliance", "Pilots are still debating compliance, enforcement, and the operational burden of Remote ID in practice."),
     ],
   },
   gridInterconnection: {
@@ -415,6 +420,7 @@ const THEMES: Record<ThemeKey, ThemeDefinition> = {
       src("other", 560, "https://www.fmcsa.dot.gov/regulations/docket-no-fmcsa-2023-0257-rin-2126-ac63-transparency-property-broker-transactions", "FMCSA NPRM on transparency in property broker transactions", "Federal regulators are still actively revising broker recordkeeping and access rules."),
       src("blog", 120, "https://www.ooida.com/2025/ooida-calls-for-stronger-broker-transparency-regs-to-protect-small-business-truckers/", "OOIDA calls for stronger broker transparency rules", "The largest owner-operator group continues to frame transparency as an urgent small-business issue."),
       src("blog", 430, "https://www.freightwaves.com/news/tql-faces-federal-lawsuit-over-broker-transparency-dispute", "FreightWaves on TQL broker-transparency dispute", "The issue is active enough to surface in litigation, not just policy commentary."),
+      src("reddit", 494, "https://www.reddit.com/r/Truckers/comments/1i2xhho/if_you_guys_want_change_in_the_trucking_industry/", "r/Truckers discussion urging comments on broker transparency", "Carriers openly describe brokers as squeezing both carriers and shippers, and treat transparency as a live cash-flow problem."),
     ],
   },
   constructionSafety: {
@@ -431,6 +437,7 @@ const THEMES: Record<ThemeKey, ThemeDefinition> = {
       src("other", 420, "https://www.osha.gov/worker-walkaround/final-rule", "OSHA worker walkaround final rule", "Inspection representation changed recently enough that operating procedures are still catching up."),
       src("other", 380, "https://www.osha.gov/memos/2024-05-10/interim-guidance-worker-walkaround-representative-designation-process", "OSHA interim guidance for walkaround representative designation", "OSHA had to issue implementation guidance immediately after the rule change."),
       src("other", 20, "https://www.bls.gov/opub/ted/2026/national-safety-stand-down-highlights-fall-hazards-in-construction.htm", "BLS on construction fall hazards and fatalities", "Construction still leads private-industry workplace deaths, with falls dominating the risk profile."),
+      src("reddit", 30, "https://www.reddit.com/r/SafetyProfessionals/comments/1sazl0c/how_does_everyone_here_collect_and_track_near/", "r/SafetyProfessionals discussion on near-miss reporting friction", "Safety teams are explicitly complaining about paper forms and data-entry-heavy near-miss workflows."),
     ],
   },
   shiftWork: {
@@ -447,6 +454,7 @@ const THEMES: Record<ThemeKey, ThemeDefinition> = {
       src("other", 180, "https://www.nyc.gov/site/dca/workers/workersrights/fastfood-retail-workers.page", "NYC Fair Workweek protections for fast food workers", "Large cities still maintain active scheduling-rights enforcement and documentation requirements."),
       src("other", 240, "https://www.glb.seattle.gov/laborstandards/ordinances/secure-scheduling", "Seattle secure scheduling ordinance", "Advance notice, premium pay, and access-to-hours requirements remain active obligations."),
       src("blog", 100, "https://www.7shifts.com/blog/fair-workweek-law/", "7shifts overview of fair workweek law", "Scheduling vendors continue publishing compliance explainers because operators still need help implementing the rules."),
+      src("reddit", 120, "https://www.reddit.com/r/restaurantowners/comments/1pzo7ld/do_your_staff_actually_follow_the_schedule_or/", "r/restaurantowners discussion on text-chaos around scheduling", "Operators describe the official schedule living in an app while swaps and call-outs still happen chaotically over text."),
     ],
   },
 };
@@ -459,6 +467,11 @@ const IDEAS_BY_THEME: Record<ThemeKey, SeedTuple[]> = {
     ["solo", "Practice migration assistant for spreadsheet-based firms", "Data migration", "A done-for-you migration and cleanup tool for small firms moving off shared drives and ad hoc spreadsheets into a repeatable workflow system."],
     ["domainExpert", "Cash-application copilot for outsourced CFO shops", "Receivables operations", "A workflow assistant for outsourced finance teams reconciling payments, follow-ups, and close tasks across multiple small-business clients."],
     ["smallTeam", "Recurring close tracker for fractional finance teams", "Monthly close ops", "A lightweight operating system for fractional controllers and outsourced close teams that need to run the same monthly sequence across dozens of clients."],
+    ["solo", "Month-end close checklist vault for micro CPA firms", "Close checklists", "A simple vault of recurring close checklists, evidence links, and owner sign-offs for micro CPA firms that still run close work from memory."],
+    ["smallTeam", "Accounts-payable inbox router for bookkeeping shops", "AP inbox triage", "An inbox and task router that turns vendor bills and approval requests into the right client workflow for small bookkeeping teams."],
+    ["solo", "Bookkeeping cleanup scoping tool for messy client files", "Cleanup estimation", "A scoping tool that helps bookkeepers quote cleanup work based on file complexity, missing months, and likely reconciliation pain."],
+    ["domainExpert", "Tax notice response tracker for local accounting firms", "Tax notice handling", "A tracker for local firms juggling IRS and state notices, client document requests, response drafts, and deadlines."],
+    ["smallTeam", "Client KPI pack builder for fractional CFO teams", "Reporting packs", "A reporting-pack builder for fractional CFO teams that need to turn raw books into consistent monthly KPI decks for multiple clients."],
   ],
   industrialMro: [
     ["smallTeam", "Obsolescence alert feed for PLC-heavy plants", "Lifecycle intelligence", "A watchlist that flags end-of-life notices, secondary-market inventory changes, and replacement-risk signals for plants running aging PLC and HMI fleets."],
@@ -483,6 +496,11 @@ const IDEAS_BY_THEME: Record<ThemeKey, SeedTuple[]> = {
     ["smallTeam", "Audit-request portal for startups selling to banks", "Audit intake", "A secure portal for handling customer audit requests, follow-ups, and document exchange when startups start selling into regulated buyers."],
     ["domainExpert", "SOC 2 to ISO 27001 gap mapper for growing SaaS companies", "Framework mapping", "A mapping workspace for companies graduating from SOC 2 into ISO 27001 and trying to reuse evidence instead of restarting compliance from scratch."],
     ["smallTeam", "Continuous evidence collector for human-heavy controls", "Manual control automation", "A lightweight evidence collector for controls that still rely on screenshots, approvals, interviews, and recurring human sign-offs rather than APIs."],
+    ["solo", "Trust-center launch kit for AI startups", "Trust center setup", "A fixed-scope launch kit that gets AI startups from scattered docs to a usable trust center before enterprise buyers start asking hard questions."],
+    ["smallTeam", "Customer security-review SLA tracker", "Review operations", "A tracker that keeps incoming customer security reviews from stalling in inboxes by assigning owners and deadlines to each request."],
+    ["smallTeam", "AI vendor-risk response pack for procurement-heavy sales", "Vendor risk packets", "A response pack builder for startups that need to answer AI governance and vendor-risk questions before procurement will move forward."],
+    ["domainExpert", "Access-review evidence workspace for lean IT teams", "Access reviews", "A workspace that helps lean IT and security teams collect, approve, and archive quarterly access review evidence without spreadsheet sprawl."],
+    ["solo", "Pen-test remediation coordinator for first enterprise audits", "Remediation follow-up", "A remediation tracker that turns a first penetration test into owned fixes, proof links, and customer-facing closeout updates."],
   ],
   oncology: [
     ["smallTeam", "Pathology slide logistics coordinator for remote second opinions", "Slide logistics", "A coordination layer that handles consent, slide shipment, image requests, and receipt tracking for cancer patients seeking remote second opinions."],
@@ -523,6 +541,11 @@ const IDEAS_BY_THEME: Record<ThemeKey, SeedTuple[]> = {
     ["smallTeam", "Home-health intake packet gap detector", "Referral completeness", "A referral-intake layer that scores incoming home-health packets for missing forms, missing signatures, and missing payer details."],
     ["domainExpert", "Infusion auth-renewal tracker", "Recurring approvals", "A renewal tracker for infusion centers handling recurring biologics where expiring approvals quietly break schedules and revenue."],
     ["domainExpert", "Payer API conformance test harness", "Payer integration QA", "A conformance harness that helps payers and vendors validate FHIR prior-auth behavior against realistic edge cases before production."],
+    ["solo", "Benefit-verification back office for fertility clinics", "Benefit verification", "A recurring verification desk for fertility clinics that need cleaner benefit checks, payer notes, and auth handoffs before expensive cycles begin."],
+    ["smallTeam", "Prior-auth status wall for orthopedic surgery schedulers", "Status visibility", "A live status wall for surgery schedulers who need one view of which cases are waiting on auth, peer review, or missing documents."],
+    ["domainExpert", "Clinical-document request chaser for specialty referrals", "Document chasing", "A workflow assistant that chases chart notes, imaging, and lab records needed to support specialty prior-auth submissions."],
+    ["smallTeam", "Peer-to-peer review prep packet for specialty practices", "Peer review prep", "A prep packet builder that assembles payer criteria, clinical history, and prior denials before physicians jump on peer-to-peer calls."],
+    ["domainExpert", "Imaging order medical-necessity checker", "Imaging QA", "A preflight checker that flags missing diagnosis support and payer-specific criteria before advanced imaging orders get denied."],
   ],
   accessibility: [
     ["solo", "EU accessibility evidence packs for Shopify merchants", "Merchant accessibility packs", "A fixed-scope evidence and remediation pack for merchants selling into Europe who need a credible accessibility story without a full internal team."],
@@ -531,6 +554,11 @@ const IDEAS_BY_THEME: Record<ThemeKey, SeedTuple[]> = {
     ["smallTeam", "EAA regression monitor for B2B SaaS release teams", "Release QA", "A regression monitor that watches product releases for accessibility slips and turns them into engineering tickets with proof attached."],
     ["smallTeam", "Accessible-document QA API", "Document QA API", "An API that evaluates generated PDFs and customer notices for machine-readable accessibility issues before they are sent downstream."],
     ["domainExpert", "Municipal digital-accessibility procurement checker", "Procurement review", "A procurement-review workflow for municipalities and public contractors buying software, kiosks, and document-heavy services under accessibility obligations."],
+    ["solo", "Accessibility statement and remediation tracker for ecommerce brands", "Statement and remediation", "A lightweight tracker for ecommerce brands that need a credible accessibility statement, an issue backlog, and proof that fixes are moving."],
+    ["smallTeam", "Procurement accessibility response base for B2B SaaS", "Accessibility questionnaires", "A shared answer base for B2B SaaS teams repeatedly filling out accessibility questionnaires and VPAT follow-up requests."],
+    ["domainExpert", "Call-center script accessibility QA for insurers", "Accessible scripts", "A QA layer that reviews call-center and support scripts for accessibility-related gaps that later become complaints or escalations."],
+    ["solo", "Accessible lifecycle email review service for product teams", "Email accessibility", "A review service for transactional and lifecycle email flows that still fail basic accessibility checks despite shipping at scale."],
+    ["smallTeam", "Design-system contrast regression monitor", "Design system QA", "A monitor that checks design-system tokens and component releases for contrast regressions before they spread across a product."],
   ],
   refrigerantTransition: [
     ["solo", "A2L retrofit photo-audit service for HVAC shops", "Install documentation", "A photo-audit and checklist workflow for HVAC shops that need better documentation and post-install evidence as A2L equipment rolls out."],
@@ -539,6 +567,11 @@ const IDEAS_BY_THEME: Record<ThemeKey, SeedTuple[]> = {
     ["smallTeam", "Property-manager refrigerant transition reserve planner", "Capital planning", "A planning tool for multi-site property owners trying to prioritize which assets are most exposed to the refrigerant transition."],
     ["domainExpert", "Grocery cold-chain refrigerant conversion PM tool", "Portfolio retrofit management", "A program-management tool for regional grocery operators sequencing refrigerant conversions across dozens of stores."],
     ["venture", "Refrigerant recovery and resale exchange for retrofit contractors", "Recovery marketplace", "An exchange that tracks recovery, testing, and resale of refrigerant pulled from retrofit projects rather than leaving it as waste or chaos."],
+    ["solo", "A2L permit packet prep for residential contractors", "Permit documentation", "A prep service that assembles the install documents, equipment details, and code notes contractors need for A2L-related permit submissions."],
+    ["smallTeam", "Truck stock and tool readiness tracker for A2L crews", "Fleet readiness", "A readiness tracker for HVAC fleets that need to know which trucks, tools, and crew kits are actually ready for A2L jobs."],
+    ["domainExpert", "Inspector code-variance evidence pack for distributors", "Inspection support", "An evidence pack that helps distributors and contractors answer inspector questions when local interpretations of A2L rules diverge."],
+    ["smallTeam", "A2L training-proof wallet for field techs", "Training records", "A portable training wallet that keeps A2L certifications, toolbox talks, and refresher proof tied to the right technicians."],
+    ["domainExpert", "Retrofit tenant-notice coordinator for property groups", "Tenant coordination", "A coordination layer for property groups that must notify tenants, sequence access, and document refrigerant-related retrofit work across occupied sites."],
   ],
   leadLine: [
     ["solo", "Lead-line homeowner outreach concierge for engineering firms", "Resident outreach", "A resident outreach and paperwork workflow for engineering firms running municipal lead-line replacement programs."],
@@ -571,6 +604,11 @@ const IDEAS_BY_THEME: Record<ThemeKey, SeedTuple[]> = {
     ["smallTeam", "Supplier onboarding CRM for traceability-covered brands", "Supplier onboarding", "A CRM built around collecting traceability contacts, lot-code formats, and readiness status across fragmented supplier networks."],
     ["domainExpert", "Recall drill simulator for mid-market food brands", "Recall readiness", "A simulator that runs traceability and recall drills so brands can see where their record, contact, and lot-link failures still exist."],
     ["domainExpert", "Produce grower lot-code translation layer", "Code normalization", "A translation layer that normalizes lot-code conventions across growers, packers, and buyers during traceability events."],
+    ["solo", "FSMA 204 spreadsheet rescue for specialty distributors", "Spreadsheet rescue", "A spreadsheet rescue service for specialty distributors whose traceability records still live in mismatched exports and ad hoc tabs."],
+    ["smallTeam", "Lot-code intake translator for foodservice distributors", "Lot-code translation", "A translator that standardizes supplier lot-code formats before they break downstream receiving, retrieval, and recall workflows."],
+    ["domainExpert", "Critical Tracking Event exception inbox", "Exception handling", "An inbox built around CTE/KDE exceptions so teams can resolve missing fields and bad partner data before an audit or recall exposes it."],
+    ["smallTeam", "Buyer traceability questionnaire response base", "Buyer questionnaires", "A response base for brands and distributors answering the same traceability and recall-readiness questionnaires from retail buyers."],
+    ["solo", "Retailer traceability readiness prep for emerging brands", "Retail readiness", "A prep service for emerging food brands that need to clean up records and partner data before a major retailer asks for traceability proof."],
   ],
   droneCompliance: [
     ["solo", "Part 107 waiver packet service for inspection firms", "Waiver preparation", "A waiver packet service for drone inspection firms that need repeatable documentation for operations outside basic Part 107 limits."],
@@ -579,6 +617,11 @@ const IDEAS_BY_THEME: Record<ThemeKey, SeedTuple[]> = {
     ["smallTeam", "Drone waiver evidence locker", "Evidence management", "A locker that stores approvals, maps, mitigation plans, and prior mission evidence so operators can reuse strong submissions."],
     ["domainExpert", "Agricultural spray compliance logbook", "Ag operations compliance", "A logbook tuned for operators balancing drone rules, chemical records, and state or crop-specific requirements."],
     ["domainExpert", "Utility drone storm-response workpack generator", "Storm response", "A generator for pre-approved mission packets, assignments, and evidence sets used by utilities and contractors during storm response."],
+    ["solo", "TRUST-to-Part 107 upgrade desk for local operators", "Pilot qualification", "A service that helps hobbyist drone operators stepping into paid work assemble the documents, study workflow, and operating basics needed for Part 107."],
+    ["smallTeam", "Drone battery and maintenance log for inspection fleets", "Maintenance records", "A maintenance log that keeps battery cycles, repairs, firmware, and aircraft readiness tied together for small inspection fleets."],
+    ["smallTeam", "Mission risk packet builder for roof and solar inspection crews", "Mission prep", "A packet builder that assembles airspace notes, site hazards, client contacts, and mission mitigations before commercial inspection flights."],
+    ["solo", "Controlled-airspace request concierge for real-estate media shops", "Airspace authorizations", "A concierge service for small media operators who keep hitting controlled-airspace friction when trying to book paid shoots."],
+    ["domainExpert", "Drone subcontractor credential wallet for utilities", "Subcontractor credentials", "A credential wallet that utility drone primes can use to verify insurance, pilot certs, and aircraft records across subcontractors."],
   ],
   gridInterconnection: [
     ["domainExpert", "Data-center interconnection document room", "Interconnection documentation", "A controlled document room for developers managing utility studies, queue paperwork, land, and power-delivery negotiations."],
@@ -595,6 +638,11 @@ const IDEAS_BY_THEME: Record<ThemeKey, SeedTuple[]> = {
     ["smallTeam", "Load-exception inbox for small importers", "Exception management", "A unified inbox for small importers handling ETA changes, customs holds, appointment shifts, and last-mile exceptions."],
     ["smallTeam", "Last-mile freight visibility for small importers", "Visibility", "A visibility layer for importers shipping too little to buy enterprise freight software but too much to manage from phone calls and spreadsheets."],
     ["domainExpert", "Margin and dispute analytics for owner-operator fleets", "Margin analytics", "A dashboard that ties broker opacity, accessorial disputes, and load-level margin erosion together for owner-operator fleets."],
+    ["solo", "Rate-confirmation clause checker for owner-operators", "Contract review", "A clause checker that flags risky rate-confirmation language before an owner-operator accepts a load with expensive hidden terms."],
+    ["smallTeam", "Broker onboarding fraud document pack for small carriers", "Fraud and onboarding", "A reusable document pack for carriers trying to survive strict broker onboarding without resending the same proofs every week."],
+    ["domainExpert", "Lumper and accessorial recovery tracker for produce fleets", "Accessorial recovery", "A tracker that keeps lumper, detention, and other accessorial disputes from disappearing after the load is delivered."],
+    ["smallTeam", "Appointment-change audit trail for drayage carriers", "Appointment disputes", "An audit trail for drayage carriers dealing with shifting appointments, gate holds, and finger-pointing over who caused delay."],
+    ["solo", "Broker scorecard built from payouts and disputes", "Broker scorecards", "A scorecard system that lets small carriers rank brokers by payout behavior, dispute frequency, and accessorial friction."],
   ],
   constructionSafety: [
     ["solo", "OSHA inspection document vault setup for specialty subcontractors", "Inspection readiness", "A document vault and operating checklist for specialty subcontractors that need their inspection materials organized before OSHA arrives."],
@@ -603,6 +651,11 @@ const IDEAS_BY_THEME: Record<ThemeKey, SeedTuple[]> = {
     ["smallTeam", "Near-miss voice-note triage for field crews", "Incident capture", "A voice-to-workflow tool that turns rough field notes into categorized near misses and follow-up tasks."],
     ["smallTeam", "Subcontractor credential wallet for construction subs", "Credential sharing", "A reusable credential wallet that small subs can send from job to job for insurance, training, and compliance proof."],
     ["domainExpert", "Construction-insurer underwriting data pack for specialty trades", "Insurance underwriting", "A data pack that helps specialty trade contractors present cleaner safety, workforce, and near-miss data during underwriting and renewal."],
+    ["solo", "Toolbox talk evidence capture for small subcontractors", "Toolbox talks", "An evidence capture app for small subs that still run toolbox talks on paper and struggle to produce proof later."],
+    ["smallTeam", "Safety-meeting attendance wallet across jobsites", "Attendance records", "A portable attendance wallet that follows workers across jobsites so crews stop losing safety-meeting proof in site-specific binders."],
+    ["smallTeam", "Corrective-action tracker after near-miss reports", "Corrective actions", "A tracker that assigns, follows up, and closes corrective actions so near-miss reports do more than create paperwork."],
+    ["domainExpert", "Equipment inspection log for rental-heavy crews", "Equipment inspections", "An inspection log built for crews that rotate rented lifts, loaders, and other gear across jobs without consistent records."],
+    ["solo", "Subcontractor JHA review desk for specialty trades", "JHA review", "A review desk for specialty trade contractors who need cleaner job hazard analyses before stepping onto larger GC sites."],
   ],
   shiftWork: [
     ["venture", "Multi-app schedule control for hourly workers", "Worker scheduling", "A worker-side scheduling app that unifies shifts, swaps, and availability across the multiple employer apps hourly workers already juggle."],
@@ -611,6 +664,11 @@ const IDEAS_BY_THEME: Record<ThemeKey, SeedTuple[]> = {
     ["smallTeam", "Clopening risk monitor for franchise groups", "Clopening compliance", "A monitor that flags risky close-open combinations and missing consent before schedules are posted."],
     ["smallTeam", "Worker-side schedule wallet across multiple employers", "Worker tooling", "A schedule wallet that gives hourly workers one place to track commitments, availability, and shift conflicts across multiple jobs."],
     ["domainExpert", "Fair-workweek evidence vault for large restaurant operators", "Employer evidence", "An evidence vault that stores notices, schedule versions, consent records, and premium-pay proof for restaurant operators under fair-workweek rules."],
+    ["solo", "Availability-intake portal for independent restaurant groups", "Availability intake", "A portal that keeps employee availability changes out of text threads and turns them into something operators can actually schedule against."],
+    ["smallTeam", "Text-to-schedule reconciliation layer for restaurants", "Schedule reconciliation", "A reconciliation layer that tracks schedule changes happening over text and pushes the final state back into the official schedule."],
+    ["smallTeam", "Shift-swap approval log for franchise operators", "Swap approvals", "A log that records who requested, approved, and worked each swap so operators can defend the final schedule later."],
+    ["domainExpert", "Predictable-scheduling audit pack for regional operators", "Audit prep", "An audit pack that assembles notice periods, premium-pay events, and consent records for operators facing labor scrutiny."],
+    ["smallTeam", "Cross-location hours marketplace for hourly chains", "Hours marketplace", "A marketplace that lets workers pick up compliant open shifts across nearby locations while preserving access-to-hours proof for the operator."],
   ],
 };
 

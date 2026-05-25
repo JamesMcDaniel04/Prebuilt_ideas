@@ -6,6 +6,7 @@ import {
   CheckCircle2,
   Copy,
   Megaphone,
+  Play,
   Rocket,
   Search,
   Sparkles,
@@ -16,9 +17,11 @@ import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import AgentRunDialog from "@/components/agents/AgentRunDialog";
+import AgentRunsList from "@/components/agents/AgentRunsList";
 import { useClaimedIdeas } from "@/lib/claims";
 import { AGENT_BASES, buildAgentTeam } from "@/lib/agentTeam";
-import { AGENT_ROLE_LABEL, type AgentRole, type AgentPlan } from "@/lib/execution";
+import { AGENT_ROLE_LABEL, type AgentRole, type AgentPlan, type ClaimedIdea } from "@/lib/execution";
 import { recommendedWorkflowsForClaim } from "@/lib/workflows";
 import { cn } from "@/lib/utils";
 
@@ -136,7 +139,7 @@ export default function AgentsPage() {
                 })}
               </div>
 
-              {selectedAgent ? <AgentDetailCard agent={selectedAgent} ideaSlug={activeClaim.opportunity_slug} /> : null}
+              {selectedAgent ? <AgentDetailCard agent={selectedAgent} claim={activeClaim} /> : null}
             </div>
 
             <div className="space-y-6">
@@ -214,8 +217,9 @@ export default function AgentsPage() {
   );
 }
 
-function AgentDetailCard({ agent, ideaSlug }: { agent: AgentPlan; ideaSlug: string }) {
+function AgentDetailCard({ agent, claim }: { agent: AgentPlan; claim: ClaimedIdea }) {
   const Icon = ROLE_ICON[agent.role];
+  const [runOpen, setRunOpen] = useState(false);
 
   async function copyPrompt() {
     await navigator.clipboard.writeText(agent.starter_prompt);
@@ -236,17 +240,28 @@ function AgentDetailCard({ agent, ideaSlug }: { agent: AgentPlan; ideaSlug: stri
         </div>
 
         <div className="flex flex-wrap gap-2">
+          <Button onClick={() => setRunOpen(true)}>
+            <Play className="h-4 w-4" />
+            Run agent
+          </Button>
           <Button variant="outline" onClick={() => { void copyPrompt(); }}>
             <Copy className="h-4 w-4" />
             Copy charter
           </Button>
-          <Button asChild>
-            <Link to={`/workflows?idea=${encodeURIComponent(ideaSlug)}&role=${agent.role}`}>
-              View workflows <ArrowRight className="h-4 w-4" />
+          <Button variant="ghost" asChild>
+            <Link to={`/workflows?idea=${encodeURIComponent(claim.opportunity_slug)}&role=${agent.role}`}>
+              Workflows <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
         </div>
       </div>
+
+      <AgentRunDialog
+        open={runOpen}
+        onOpenChange={setRunOpen}
+        agent={agent}
+        claim={claim}
+      />
 
       <div className="mt-5 grid gap-5 xl:grid-cols-[0.95fr_1.05fr]">
         <div className="space-y-5">
@@ -291,6 +306,15 @@ function AgentDetailCard({ agent, ideaSlug }: { agent: AgentPlan; ideaSlug: stri
               <code>{agent.starter_prompt}</code>
             </pre>
           </div>
+        </div>
+      </div>
+
+      <div className="mt-6 border-t border-border/70 pt-5">
+        <div className="flex items-center justify-between">
+          <p className="text-xs font-medium uppercase tracking-[0.18em] text-primary">Recent runs</p>
+        </div>
+        <div className="mt-3">
+          <AgentRunsList claim={claim} role={agent.role} />
         </div>
       </div>
     </div>

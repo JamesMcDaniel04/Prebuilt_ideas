@@ -167,6 +167,47 @@ test.describe("Auth-gated routes", () => {
   });
 });
 
+test.describe("Agents workspace", () => {
+  test("/agents shows empty state with no active claim", async ({ page }) => {
+    await page.goto("/browse");
+    await page.evaluate(() => {
+      localStorage.removeItem("greenfield.claimedIdeas");
+      localStorage.removeItem("greenfield.activeClaimSlug");
+      localStorage.removeItem("greenfield.demoAgentRuns");
+    });
+    await page.goto("/agents");
+    await expect(page.getByText(/No claimed idea yet/i)).toBeVisible();
+  });
+
+  test("claim an idea then open /agents → see the 4-agent team + Run buttons", async ({ page }) => {
+    await page.goto("/browse");
+    await page.evaluate(() => {
+      localStorage.removeItem("greenfield.claimedIdeas");
+      localStorage.removeItem("greenfield.activeClaimSlug");
+      localStorage.removeItem("greenfield.demoAgentRuns");
+    });
+    await page.goto("/opportunity/solo-cpa-workflow-os");
+    await page.getByRole("button", { name: /^Claim idea$/ }).first().click();
+
+    await page.goto("/agents");
+    // Idea title rendered as the active claim
+    await expect(page.getByRole("heading", { name: /Workflow OS for solo CPAs/i }).first()).toBeVisible();
+    // All 4 agent role chips
+    for (const label of ["GTM", "Sales", "Marketing", "Engineering"]) {
+      await expect(page.getByRole("button", { name: new RegExp(`^${label}$`) }).first()).toBeVisible();
+    }
+    // Run button visible on the default selected agent (GTM)
+    await expect(page.getByRole("button", { name: /^Run agent$/ }).first()).toBeVisible();
+
+    // Cleanup
+    await page.evaluate(() => {
+      localStorage.removeItem("greenfield.claimedIdeas");
+      localStorage.removeItem("greenfield.activeClaimSlug");
+      localStorage.removeItem("greenfield.demoAgentRuns");
+    });
+  });
+});
+
 test.describe("Misc", () => {
   test("unknown route renders the 404", async ({ page }) => {
     await page.goto("/this-page-does-not-exist");

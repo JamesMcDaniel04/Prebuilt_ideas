@@ -100,6 +100,35 @@ export type IdeaClaim = {
   expires_at: string | null;
 };
 
+export type AgentRunStatus = "queued" | "running" | "succeeded" | "failed";
+
+export type AgentToolCall = {
+  /** Tool name e.g. "web_search". */
+  name: string;
+  /** What the model passed to the tool. */
+  input: Record<string, unknown>;
+  /** What the tool returned. May contain { error } when a tool failed. */
+  result: unknown;
+  /** Milliseconds the tool took to execute. */
+  duration_ms?: number;
+};
+
+export type AgentRun = {
+  id: string;
+  claim_id: string;
+  agent_role: "gtm" | "sales" | "marketing" | "engineering";
+  status: AgentRunStatus;
+  prompt: string;
+  output_markdown: string | null;
+  tool_calls: AgentToolCall[];
+  model: string | null;
+  tokens_input: number | null;
+  tokens_output: number | null;
+  started_at: string;
+  completed_at: string | null;
+  error: string | null;
+};
+
 export type Profile = {
   user_id: string;
   display_name: string | null;

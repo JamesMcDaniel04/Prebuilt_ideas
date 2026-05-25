@@ -1,3 +1,4 @@
+import { RESEARCH_OPPORTUNITIES } from "./researchedIdeas";
 import type { Opportunity, SourceCitation } from "@/lib/types";
 
 // Helper to keep sample sources concise. Real sources come from the n8n pipeline.
@@ -885,11 +886,12 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
     featured: false,
     rank: 12,
   }),
+  ...RESEARCH_OPPORTUNITIES,
 ];
 
 /**
  * A few sample build briefs so the Pro flow is demoable. Keyed by opportunity slug.
- * Only includes briefs for 3 of the 12 opportunities — the others show the empty
+ * Only includes a small subset of demo opportunities — the rest show the empty
  * "Generate brief" state so users can see both paths.
  */
 export const SAMPLE_BUILD_BRIEFS: Record<string, string> = {

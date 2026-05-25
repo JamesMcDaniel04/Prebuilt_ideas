@@ -72,7 +72,13 @@ export default function OpportunityDetailPage() {
         <h1 className="font-display text-3xl md:text-4xl leading-tight">{opp.title}</h1>
 
         <div className="mt-4 flex flex-wrap items-center gap-1.5">
-          {opp.featured && (
+          {opp.yc_rfs_slug && (
+            <Badge className="gap-1 bg-accent/90 text-accent-foreground hover:bg-accent">
+              <Rocket className="h-3 w-3" />
+              YC Request
+            </Badge>
+          )}
+          {opp.featured && !opp.yc_rfs_slug && (
             <Badge className="bg-accent/90 text-accent-foreground hover:bg-accent">Featured</Badge>
           )}
           <Badge variant="soft">{opp.industry}</Badge>
@@ -84,6 +90,27 @@ export default function OpportunityDetailPage() {
         </div>
 
         <p className="mt-5 text-lg text-foreground/80">{opp.one_liner}</p>
+
+        {opp.yc_rfs_slug && (() => {
+          const rfs = YC_RFS_BATCH.items.find((r) => r.slug === opp.yc_rfs_slug);
+          if (!rfs) return null;
+          return (
+            <div className="mt-5 rounded-lg border border-accent/30 bg-accent/5 p-3 text-sm">
+              <p className="text-muted-foreground">
+                Seeded by Y Combinator's <span className="font-medium text-foreground">{rfs.title}</span> Request for Startups
+                ({YC_RFS_BATCH.label}). Greenfield's brief above is original; for YC's own framing of the topic, see the source.
+              </p>
+              <a
+                href={ycRfsUrl(rfs.slug)}
+                target="_blank"
+                rel="noreferrer"
+                className="mt-1.5 inline-flex items-center gap-1 text-primary hover:underline"
+              >
+                Read YC's take <ExternalLink className="h-3.5 w-3.5" />
+              </a>
+            </div>
+          );
+        })()}
       </header>
 
       <Separator className="my-8" />

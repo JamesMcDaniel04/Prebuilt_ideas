@@ -43,6 +43,7 @@ const EMPTY: FormState = {
   featured: false,
   rank: 100,
   cover_image_url: null,
+  yc_rfs_slug: null,
 };
 
 // Vocabularies the seed script doesn't export — keep in sync with scripts/seed.ts

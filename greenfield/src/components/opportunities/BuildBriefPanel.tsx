@@ -103,7 +103,7 @@ export default function BuildBriefPanel({ opportunityId, opportunitySlug, opport
             <Sparkles className="h-5 w-5 text-accent-foreground" />
           </div>
           <div className="flex-1">
-            <h4 className="font-display text-base">Build brief — Pro</h4>
+            <h4 className="font-display text-base">Build brief — members only</h4>
             <p className="mt-1 text-sm text-muted-foreground">
               A prescriptive Markdown spec for this opportunity: stack, schema, weekly milestones.
               Paste it into Claude Code, Cursor, or Codex and start shipping.
@@ -112,7 +112,7 @@ export default function BuildBriefPanel({ opportunityId, opportunitySlug, opport
               <Button asChild>
                 <Link to={`/pricing?next=${encodeURIComponent(`/opportunity/${opportunitySlug}`)}`}>
                   <Lock className="h-4 w-4" />
-                  Upgrade to unlock
+                  See plans
                 </Link>
               </Button>
               <Dialog>
@@ -157,7 +157,7 @@ export default function BuildBriefPanel({ opportunityId, opportunitySlug, opport
           </p>
         </div>
         <span className="inline-flex items-center gap-1 rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent-foreground">
-          <Sparkles className="h-3 w-3" /> {isAdmin && !isPro ? "Admin" : "Pro"}
+          <Sparkles className="h-3 w-3" /> {isAdmin && !isPro ? "Admin" : "Member"}
         </span>
       </div>
 

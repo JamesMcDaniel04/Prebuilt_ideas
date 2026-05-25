@@ -1,116 +1,118 @@
-import { Check, Sparkles } from "lucide-react";
+import { Check, Lock, Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth";
+import { TIERS, type PricingTier } from "@/lib/pricing";
 
 export default function PricingPage() {
   const { user, profile } = useAuth();
 
-  function startUpgrade() {
-    // Stripe wiring lands post-MVP. For tomorrow we flip is_pro manually in Supabase.
-    toast.info("Checkout coming online shortly — message us and we'll flip you on.");
+  function startUpgrade(tier: string) {
+    toast.info(`${tier} checkout coming online shortly — message us and we'll get you set up.`);
   }
 
   return (
-    <section className="container-narrow py-16 max-w-3xl">
-      <h1 className="font-display text-4xl">Pricing</h1>
-      <p className="mt-2 text-muted-foreground">
-        Free to browse. Pro unlocks every build brief.
-      </p>
+    <section className="px-6 md:px-10 py-12 max-w-4xl">
+      <header>
+        <p className="text-xs font-medium uppercase tracking-wider text-primary">Pricing</p>
+        <h1 className="mt-2 font-display text-3xl md:text-4xl leading-tight">
+          Annual plans. No metered usage, no surprise bills.
+        </h1>
+        <p className="mt-3 max-w-2xl text-base text-muted-foreground">
+          Pick a plan to unlock the full catalogue, downloadable build briefs, and — on Team — research agents, lead gen, and weekly intel reports.
+        </p>
+      </header>
 
       <div className="mt-10 grid gap-6 md:grid-cols-2">
-        <Tier
-          name="Free"
-          price="$0"
-          tagline="Browse the full catalogue."
-          features={[
-            "All opportunities, all filters",
-            "Save to a personal list",
-            "New entries every week",
-          ]}
-          cta={<Button variant="outline" asChild className="w-full"><Link to="/">Start browsing</Link></Button>}
-        />
-        <Tier
-          highlight
-          name="Pro"
-          price="$24"
-          period="/ month"
-          tagline="Ship from a brief, not from scratch."
-          features={[
-            "Everything in Free",
-            "Download Markdown build briefs",
-            "Paste straight into Claude Code, Cursor, or Codex",
-            "Early access to new opportunities",
-          ]}
-          cta={
-            profile?.is_pro ? (
-              <Button disabled className="w-full">You're Pro — thank you</Button>
-            ) : user ? (
-              <Button className="w-full" onClick={startUpgrade}>
-                <Sparkles className="h-4 w-4" />
-                Upgrade to Pro
-              </Button>
-            ) : (
-              <Button className="w-full" asChild>
-                <Link to="/auth?mode=signup&next=/pricing">
-                  <Sparkles className="h-4 w-4" />
-                  Create account & upgrade
-                </Link>
-              </Button>
-            )
-          }
-        />
+        {TIERS.map((tier) => (
+          <TierCard
+            key={tier.name}
+            tier={tier}
+            isCurrent={!!profile?.is_pro && tier.name === "Starter"}
+            ctaState={user ? "upgrade" : "signup"}
+            onUpgrade={() => startUpgrade(tier.name)}
+          />
+        ))}
       </div>
 
       <p className="mt-10 text-center text-sm text-muted-foreground">
-        Annual plans and team seats coming soon. Cancel anytime.
+        Annual billing only. Cancel any time — your access stays active through the end of the term. Need a custom plan? <a href="mailto:hello@greenfield.app" className="text-primary hover:underline">Talk to us.</a>
       </p>
     </section>
   );
 }
 
-function Tier({
-  name, price, period, tagline, features, cta, highlight,
+function TierCard({
+  tier, isCurrent, ctaState, onUpgrade,
 }: {
-  name: string;
-  price: string;
-  period?: string;
-  tagline: string;
-  features: string[];
-  cta: React.ReactNode;
-  highlight?: boolean;
+  tier: PricingTier;
+  isCurrent: boolean;
+  ctaState: "upgrade" | "signup";
+  onUpgrade: () => void;
 }) {
   return (
     <div
       className={
-        "rounded-2xl border p-6 " +
-        (highlight ? "border-primary/40 bg-gradient-to-br from-primary/[0.04] to-accent/[0.06]" : "bg-card")
+        "relative flex flex-col rounded-2xl border p-6 " +
+        (tier.highlight
+          ? "border-primary/50 bg-gradient-to-br from-primary/[0.05] to-accent/[0.07] shadow-md"
+          : "bg-card")
       }
     >
-      <div className="flex items-baseline gap-2">
-        <h3 className="font-display text-xl">{name}</h3>
-        {highlight && (
-          <span className="rounded-full border border-accent/40 bg-accent/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent-foreground">
-            Pro
+      {tier.highlight && (
+        <Badge className="absolute -top-3 left-6 bg-accent text-accent-foreground hover:bg-accent">
+          Most teams pick this
+        </Badge>
+      )}
+
+      <div className="flex items-baseline justify-between gap-2">
+        <h3 className="font-display text-2xl">{tier.name}</h3>
+        {tier.highlight && (
+          <span className="inline-flex items-center gap-1 text-xs font-medium text-accent-foreground">
+            <Sparkles className="h-3.5 w-3.5" />
+            Includes Team features
           </span>
         )}
       </div>
-      <p className="mt-2 text-sm text-muted-foreground">{tagline}</p>
-      <div className="mt-4 flex items-baseline gap-1">
-        <span className="font-display text-4xl">{price}</span>
-        {period && <span className="text-sm text-muted-foreground">{period}</span>}
+      <p className="mt-1 text-sm text-muted-foreground">{tier.tagline}</p>
+
+      <div className="mt-5 flex items-baseline gap-1">
+        <span className="font-display text-4xl">{tier.priceLabel}</span>
+        <span className="text-sm text-muted-foreground">{tier.per}</span>
       </div>
-      <ul className="mt-6 space-y-2 text-sm">
-        {features.map((f) => (
+
+      <ul className="mt-6 flex-1 space-y-2.5 text-sm">
+        {tier.features.map((f) => (
           <li key={f} className="flex items-start gap-2">
-            <Check className="mt-0.5 h-4 w-4 text-primary" />
+            <Check className="mt-0.5 h-4 w-4 flex-shrink-0 text-primary" />
             <span>{f}</span>
           </li>
         ))}
       </ul>
-      <div className="mt-6">{cta}</div>
+
+      <div className="mt-7">
+        {isCurrent ? (
+          <Button disabled className="w-full">
+            <Check className="h-4 w-4" />
+            Current plan
+          </Button>
+        ) : ctaState === "signup" ? (
+          <Button className="w-full" variant={tier.highlight ? "default" : "outline"} asChild>
+            <Link to={`/auth?mode=signup&next=/pricing&plan=${tier.name.toLowerCase()}`}>
+              <Lock className="h-4 w-4" />
+              Create account & subscribe
+            </Link>
+          </Button>
+        ) : (
+          <Button className="w-full" variant={tier.highlight ? "default" : "outline"} onClick={onUpgrade}>
+            <Sparkles className="h-4 w-4" />
+            Start {tier.name}
+          </Button>
+        )}
+      </div>
     </div>
   );
 }

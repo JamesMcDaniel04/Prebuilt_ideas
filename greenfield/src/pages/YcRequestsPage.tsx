@@ -1,25 +1,50 @@
-import { ExternalLink } from "lucide-react";
+import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { ExternalLink, Rocket } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
-import YcRfsRow from "@/components/opportunities/YcRfsRow";
+import OpportunityRow from "@/components/opportunities/OpportunityRow";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { SAMPLE_OPPORTUNITIES } from "@/lib/fixtures";
 import { YC_RFS_BATCH } from "@/lib/yc-rfs";
+import type { Opportunity } from "@/lib/types";
 
 export default function YcRequestsPage() {
+  const { data: opps = [], isLoading } = useQuery({
+    queryKey: ["yc-opportunities", isSupabaseConfigured],
+    queryFn: async () => {
+      if (!isSupabaseConfigured) {
+        return SAMPLE_OPPORTUNITIES.filter((o) => o.yc_rfs_slug);
+      }
+      const { data, error } = await supabase
+        .from("opportunities")
+        .select("*")
+        .not("yc_rfs_slug", "is", null)
+        .order("rank", { ascending: true });
+      if (error) throw error;
+      return data as Opportunity[];
+    },
+  });
+
+  // Topics that have no Greenfield brief yet — shown as a small "coming soon" tail.
+  const coveredSlugs = useMemo(() => new Set(opps.map((o) => o.yc_rfs_slug)), [opps]);
+  const uncovered = YC_RFS_BATCH.items.filter((rfs) => !coveredSlugs.has(rfs.slug));
+
   return (
     <>
-      {/* Page header — same shape as BrowsePage hero */}
+      {/* Hero */}
       <section className="border-b border-border/60 bg-gradient-to-b from-accent/[0.06] to-transparent">
         <div className="px-6 md:px-10 pt-10 pb-8 max-w-6xl">
           <div className="flex items-center gap-2">
-            <p className="text-xs font-medium uppercase tracking-wider text-primary">External directory</p>
+            <Rocket className="h-4 w-4 text-primary" />
+            <p className="text-xs font-medium uppercase tracking-wider text-primary">YC Requests for Startups</p>
             <Badge variant="outline">{YC_RFS_BATCH.label}</Badge>
           </div>
           <h1 className="mt-2 font-display text-3xl md:text-4xl leading-tight">
-            YC Requests for Startups
+            Greenfield briefs seeded by YC's open requests.
           </h1>
           <p className="mt-3 max-w-2xl text-base text-muted-foreground">
-            {YC_RFS_BATCH.items.length} problem spaces Y Combinator is actively seeking founders for this batch.
-            Each entry below is our brief framing — for the full description and YC's reasoning, follow the link to the source.
+            Y Combinator publishes problem spaces they're actively seeking founders for. Each entry below is an original Greenfield opportunity — concrete product, market, and build path — written in response to one of YC's {YC_RFS_BATCH.items.length} current requests.
           </p>
           <a
             href={YC_RFS_BATCH.sourceUrl}
@@ -27,33 +52,64 @@ export default function YcRequestsPage() {
             rel="noreferrer"
             className="mt-3 inline-flex items-center gap-1 text-sm text-primary hover:underline"
           >
-            ycombinator.com/rfs <ExternalLink className="h-3.5 w-3.5" />
+            See YC's source list <ExternalLink className="h-3.5 w-3.5" />
           </a>
         </div>
       </section>
 
-      {/* List — same row layout as the catalogue */}
+      {/* Catalogue rows — same component as the main browse page */}
       <section className="px-6 md:px-10 py-6 max-w-6xl">
         <div className="mb-4 flex items-baseline justify-between">
           <p className="text-sm">
-            <span className="font-medium">{YC_RFS_BATCH.items.length}</span>
-            <span className="text-muted-foreground"> requests</span>
+            <span className="font-medium">{isLoading ? "…" : opps.length}</span>
+            <span className="text-muted-foreground"> YC-seeded opportunit{opps.length === 1 ? "y" : "ies"}</span>
           </p>
         </div>
 
-        <div className="space-y-3 animate-fade-in">
-          {YC_RFS_BATCH.items.map((rfs) => (
-            <YcRfsRow key={rfs.slug} rfs={rfs} batchLabel={YC_RFS_BATCH.label} />
-          ))}
-        </div>
+        {isLoading ? (
+          <div className="space-y-3">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <div key={`skel-${i}`} className="h-32 animate-pulse rounded-xl border bg-muted/40" />
+            ))}
+          </div>
+        ) : opps.length === 0 ? (
+          <div className="rounded-xl border border-dashed bg-muted/30 p-10 text-center">
+            <p className="font-display text-lg">No YC-seeded briefs yet.</p>
+            <p className="mt-1 text-sm text-muted-foreground">Tag opportunities with a YC RFS slug in the admin to populate this view.</p>
+          </div>
+        ) : (
+          <div className="space-y-3 animate-fade-in">
+            {opps.map((opp) => <OpportunityRow key={opp.id} opp={opp} />)}
+          </div>
+        )}
 
-        {/* Attribution */}
-        <p className="mt-10 rounded-lg border border-dashed bg-muted/30 p-5 text-sm text-muted-foreground">
-          Titles, authors, and topic structure are referenced from{" "}
-          <a href={YC_RFS_BATCH.sourceUrl} target="_blank" rel="noreferrer" className="text-primary hover:underline">
-            Y Combinator's RFS page
-          </a>. The 1-line framings are Greenfield's own commentary — follow the source links for YC's actual descriptions and reasoning.
-        </p>
+        {/* Coverage tail: topics still without a brief */}
+        {uncovered.length > 0 && !isLoading && (
+          <div className="mt-10">
+            <h2 className="font-display text-lg">No brief yet</h2>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {uncovered.length} YC topic{uncovered.length === 1 ? "" : "s"} we haven't written a Greenfield brief for. Source descriptions live at ycombinator.com/rfs.
+            </p>
+            <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+              {uncovered.map((rfs) => (
+                <li key={rfs.slug}>
+                  <a
+                    href={`${YC_RFS_BATCH.sourceUrl}#${rfs.slug}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex items-center justify-between gap-3 rounded-lg border border-dashed bg-card/50 px-4 py-3 text-sm hover:border-primary/30 hover:bg-card"
+                  >
+                    <span>
+                      <span className="font-medium">{rfs.title}</span>
+                      <span className="ml-2 text-xs text-muted-foreground">— {rfs.author}</span>
+                    </span>
+                    <ExternalLink className="h-3.5 w-3.5 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </section>
     </>
   );

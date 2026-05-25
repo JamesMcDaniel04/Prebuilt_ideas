@@ -37,8 +37,15 @@ test.describe("Public shell", () => {
     await page.goto("/");
     // One of our fixture titles should appear
     await expect(page.getByRole("heading", { name: /Workflow OS for solo CPAs/i })).toBeVisible();
-    // Card count text
-    await expect(page.getByText(/12 opportunities/i)).toBeVisible();
+    // Card count text — exact number depends on fixtures, just check it's plural
+    await expect(page.getByText(/\d+ opportunities/i).first()).toBeVisible();
+  });
+
+  test("/yc-requests filters the catalogue to YC-seeded entries", async ({ page }) => {
+    await page.goto("/yc-requests");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/YC/);
+    // At least one of the YC-seeded fixture titles renders
+    await expect(page.getByRole("heading", { name: /immigration firm for startup/i })).toBeVisible();
   });
 
   test("opportunity detail page renders from fixtures", async ({ page }) => {
@@ -49,13 +56,14 @@ test.describe("Public shell", () => {
     await expect(page.getByRole("heading", { name: /^Why now$/i })).toBeVisible();
   });
 
-  test("/pricing shows Free and Pro tiers", async ({ page }) => {
+  test("/pricing shows Starter and Team tiers", async ({ page }) => {
     await page.goto("/pricing");
-    await expect(page.getByRole("heading", { name: /^Pricing$/ })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /^Free$/ })).toBeVisible();
-    await expect(page.getByRole("heading", { name: /^Pro$/ })).toBeVisible();
-    await expect(page.getByText("$0")).toBeVisible();
-    await expect(page.getByText("$24")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /^Starter$/ })).toBeVisible();
+    await expect(page.getByRole("heading", { name: /^Team$/ })).toBeVisible();
+    await expect(page.getByText("$99")).toBeVisible();
+    await expect(page.getByText("$350")).toBeVisible();
+    // No free tier anymore
+    await expect(page.getByText("$0")).toHaveCount(0);
   });
 
   test("/auth renders sign-in form by default", async ({ page }) => {

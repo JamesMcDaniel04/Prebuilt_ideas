@@ -17,6 +17,7 @@ export default function Sidebar() {
       <Link to="/" className="flex items-center gap-2 px-5 py-5">
         <Logo />
         <span className="font-display text-xl tracking-tight">Greenfield</span>
+        <ShieldCheck className="hidden" />
       </Link>
 
       {/* Primary nav */}
@@ -49,12 +50,12 @@ export default function Sidebar() {
         {profile?.is_pro ? (
           <div className="flex items-center gap-2 rounded-md bg-accent/10 px-2.5 py-1.5 text-xs">
             <Sparkles className="h-3.5 w-3.5 text-accent-foreground" />
-            <span className="font-medium">Pro</span>
+            <span className="font-medium">Member</span>
             <span className="text-muted-foreground">— briefs unlocked</span>
           </div>
         ) : user ? (
           <Button asChild size="sm" variant="outline" className="w-full justify-start">
-            <Link to="/pricing"><Sparkles className="h-3.5 w-3.5" />Upgrade to Pro</Link>
+            <Link to="/pricing"><Sparkles className="h-3.5 w-3.5" />View plans</Link>
           </Button>
         ) : (
           <Button asChild size="sm" className="w-full">

@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import OpportunityCard from "@/components/opportunities/OpportunityCard";
 import { Button } from "@/components/ui/button";
+import { publishedOpportunityFromRow } from "@/lib/catalogue";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { useAuth } from "@/lib/auth";
 import type { Opportunity } from "@/lib/types";
@@ -21,8 +22,8 @@ export default function SavedPage() {
         .order("created_at", { ascending: false });
       if (error) throw error;
       return (data ?? [])
-        .map((row) => row.opportunities as unknown as Opportunity)
-        .filter(Boolean);
+        .map((row) => publishedOpportunityFromRow(row.opportunities as unknown as Opportunity))
+        .filter((opp): opp is Opportunity => opp !== null);
     },
   });
 

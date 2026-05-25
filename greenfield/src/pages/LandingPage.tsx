@@ -10,11 +10,12 @@ import { TIERS } from "@/lib/pricing";
 const PREVIEW_COUNT = 10;
 
 export default function LandingPage() {
+  const totalCount = SAMPLE_OPPORTUNITIES.length;
+  const previewCount = Math.min(PREVIEW_COUNT, totalCount);
   const featured = [...SAMPLE_OPPORTUNITIES]
     .sort((a, b) => Number(b.featured) - Number(a.featured) || a.rank - b.rank)
-    .slice(0, PREVIEW_COUNT);
-  const totalCount = SAMPLE_OPPORTUNITIES.length;
-  const lockedCount = totalCount - PREVIEW_COUNT;
+    .slice(0, previewCount);
+  const lockedCount = Math.max(0, totalCount - previewCount);
 
   return (
     <>
@@ -43,7 +44,7 @@ export default function LandingPage() {
             </Button>
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            From $99/year. Preview {PREVIEW_COUNT} opportunities below — sign up to unlock the rest.
+            From $99/year. Preview {previewCount} opportunities below — sign up to unlock the rest.
           </p>
         </div>
       </section>
@@ -70,7 +71,7 @@ export default function LandingPage() {
           <div className="flex items-baseline justify-between gap-4">
             <div>
               <p className="text-xs font-medium uppercase tracking-wider text-primary">Featured this week</p>
-              <h2 className="mt-1 font-display text-2xl md:text-3xl">{PREVIEW_COUNT} of {totalCount}.</h2>
+              <h2 className="mt-1 font-display text-2xl md:text-3xl">{previewCount} of {totalCount}.</h2>
             </div>
           </div>
 
@@ -78,36 +79,36 @@ export default function LandingPage() {
             {featured.map((opp) => <OpportunityRow key={opp.id} opp={opp} />)}
           </div>
 
-          {/* Locked teaser — replaces the old "Browse all" CTA */}
-          <div className="relative mt-3 overflow-hidden rounded-xl border border-dashed bg-gradient-to-b from-card to-muted/30">
-            {/* Faded ghost rows to imply more below the fold */}
-            <div className="pointer-events-none absolute inset-x-0 top-0 space-y-3 p-4 opacity-30 blur-[1px]">
-              <div className="h-20 rounded-lg border bg-card" />
-              <div className="h-20 rounded-lg border bg-card" />
-            </div>
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />
-            <div className="relative px-6 py-16 text-center">
-              <Lock className="mx-auto h-6 w-6 text-primary" />
-              <h3 className="mt-3 font-display text-xl">
-                {lockedCount} more opportunities behind sign-up.
-              </h3>
-              <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
-                Full briefs, filters, saved lists, and downloadable Markdown specs.
-                Starter is $99/year — cancel anytime.
-              </p>
-              <div className="mt-5 flex flex-wrap justify-center gap-3">
-                <Button asChild>
-                  <Link to="/auth?mode=signup">
-                    Create account
-                    <ArrowRight className="h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" asChild>
-                  <a href="#pricing">See pricing</a>
-                </Button>
+          {lockedCount > 0 && (
+            <div className="relative mt-3 overflow-hidden rounded-xl border border-dashed bg-gradient-to-b from-card to-muted/30">
+              <div className="pointer-events-none absolute inset-x-0 top-0 space-y-3 p-4 opacity-30 blur-[1px]">
+                <div className="h-20 rounded-lg border bg-card" />
+                <div className="h-20 rounded-lg border bg-card" />
+              </div>
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/80 to-background" />
+              <div className="relative px-6 py-16 text-center">
+                <Lock className="mx-auto h-6 w-6 text-primary" />
+                <h3 className="mt-3 font-display text-xl">
+                  {lockedCount} more opportunities behind sign-up.
+                </h3>
+                <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+                  Full briefs, filters, saved lists, and downloadable Markdown specs.
+                  Starter is $99/year — cancel anytime.
+                </p>
+                <div className="mt-5 flex flex-wrap justify-center gap-3">
+                  <Button asChild>
+                    <Link to="/auth?mode=signup">
+                      Create account
+                      <ArrowRight className="h-4 w-4" />
+                    </Link>
+                  </Button>
+                  <Button variant="ghost" asChild>
+                    <a href="#pricing">See pricing</a>
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 

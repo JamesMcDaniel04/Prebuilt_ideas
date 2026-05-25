@@ -4,6 +4,7 @@ import { ExternalLink, Rocket } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import OpportunityRow from "@/components/opportunities/OpportunityRow";
+import { publishedOpportunitiesFromRows } from "@/lib/catalogue";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { SAMPLE_OPPORTUNITIES } from "@/lib/fixtures";
 import { YC_RFS_BATCH } from "@/lib/yc-rfs";
@@ -22,7 +23,7 @@ export default function YcRequestsPage() {
         .not("yc_rfs_slug", "is", null)
         .order("rank", { ascending: true });
       if (error) throw error;
-      return data as Opportunity[];
+      return publishedOpportunitiesFromRows(data as Opportunity[]).filter((o) => o.yc_rfs_slug);
     },
   });
 

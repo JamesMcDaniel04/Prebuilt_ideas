@@ -9,8 +9,8 @@ import Sparkline from "@/components/opportunities/Sparkline";
 import SaveButton from "@/components/opportunities/SaveButton";
 import BuildBriefPanel from "@/components/opportunities/BuildBriefPanel";
 import SourcesSection from "@/components/opportunities/SourcesSection";
+import { publishedOpportunityFromRow } from "@/lib/catalogue";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { SAMPLE_OPPORTUNITIES } from "@/lib/fixtures";
 import { YC_RFS_BATCH, ycRfsUrl } from "@/lib/yc-rfs";
 import type { Opportunity } from "@/lib/types";
 import { DIFFICULTY_TONE } from "@/lib/vocab";
@@ -24,7 +24,7 @@ export default function OpportunityDetailPage() {
     enabled: !!slug,
     queryFn: async () => {
       if (!isSupabaseConfigured) {
-        return SAMPLE_OPPORTUNITIES.find((o) => o.slug === slug) ?? null;
+        return publishedOpportunityFromRow(slug ? { slug } : null);
       }
       const { data, error } = await supabase
         .from("opportunities")
@@ -32,7 +32,7 @@ export default function OpportunityDetailPage() {
         .eq("slug", slug!)
         .maybeSingle();
       if (error) throw error;
-      return data as Opportunity | null;
+      return publishedOpportunityFromRow((data as Opportunity | null) ?? { slug: slug! });
     },
   });
 

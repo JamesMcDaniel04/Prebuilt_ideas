@@ -48,7 +48,7 @@ function makeOpp(
   };
 }
 
-export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
+export const ALL_SAMPLE_OPPORTUNITIES: Opportunity[] = [
   makeOpp({
     slug: "solo-cpa-workflow-os",
     title: "Workflow OS for solo CPAs",
@@ -888,6 +888,10 @@ export const SAMPLE_OPPORTUNITIES: Opportunity[] = [
   }),
   ...RESEARCH_OPPORTUNITIES,
 ];
+
+export const SAMPLE_OPPORTUNITIES: Opportunity[] = ALL_SAMPLE_OPPORTUNITIES.filter(
+  (opp) => opp.sources.length > 0,
+);
 
 /**
  * A few sample build briefs so the Pro flow is demoable. Keyed by opportunity slug.

@@ -1,13 +1,28 @@
-import type { Opportunity } from "@/lib/types";
+import type { Opportunity, SourceCitation } from "@/lib/types";
+
+type ThemeKey =
+  | "accounting"
+  | "industrialMro"
+  | "syntheticData"
+  | "complianceReadiness"
+  | "oncology"
+  | "counterUas"
+  | "agentInference"
+  | "agentOrchestration"
+  | "priorAuth"
+  | "accessibility"
+  | "refrigerantTransition"
+  | "leadLine"
+  | "dairyBiosecurity"
+  | "apprenticeship"
+  | "foodTraceability"
+  | "droneCompliance"
+  | "gridInterconnection"
+  | "freightTransparency"
+  | "constructionSafety"
+  | "shiftWork";
 
 type ResearchStage = "solo" | "smallTeam" | "domainExpert" | "venture";
-
-type ResearchIdeaSeed = {
-  stage: ResearchStage;
-  slug: string;
-  title: string;
-  summary: string;
-};
 
 type StageDefaults = {
   founder_path: Opportunity["founder_path"];
@@ -19,18 +34,57 @@ type StageDefaults = {
   model_type: Opportunity["model_type"];
 };
 
-type Classification = {
+type ThemeDefinition = {
   industry: Opportunity["industry"];
-  niche: string;
   audience: Opportunity["audience"];
-  distribution_play: Opportunity["distribution_play"];
+  niche: string;
+  model_type: Opportunity["model_type"];
+  revenue_ceiling?: Opportunity["revenue_ceiling"];
   moat: Opportunity["moat"];
+  distribution_play: Opportunity["distribution_play"];
   demand_trend: Opportunity["demand_trend"];
+  market_size_summary: string;
   timing_rationale: string;
+  sources: SourceCitation[];
 };
+
+type IdeaSeed = {
+  theme: ThemeKey;
+  stage: ResearchStage;
+  title: string;
+  niche: string;
+  summary: string;
+  model_type?: Opportunity["model_type"];
+  audience?: Opportunity["audience"];
+  revenue_ceiling?: Opportunity["revenue_ceiling"];
+  moat?: Opportunity["moat"];
+  distribution_play?: Opportunity["distribution_play"];
+  demand_trend?: Opportunity["demand_trend"];
+};
+
+type SeedTuple = [ResearchStage, string, string, string, Opportunity["model_type"]?];
 
 const BASE_DATE = new Date("2026-05-24T00:00:00Z").toISOString();
 const BASE_RANK = 36;
+
+function src(
+  source_type: SourceCitation["source_type"],
+  daysAgo: number,
+  url: string,
+  title: string,
+  snippet: string,
+): SourceCitation {
+  const d = new Date("2026-05-24T00:00:00Z");
+  d.setUTCDate(d.getUTCDate() - daysAgo);
+  return {
+    source_type,
+    url,
+    title,
+    snippet,
+    published_at: d.toISOString(),
+    ingested_at: BASE_DATE,
+  };
+}
 
 const STAGE_DEFAULTS: Record<ResearchStage, StageDefaults> = {
   solo: {
@@ -67,422 +121,594 @@ const STAGE_DEFAULTS: Record<ResearchStage, StageDefaults> = {
     time_to_launch: "3+ months",
     build_stack_hint: "Traditional engineering",
     revenue_ceiling: "Venture ($10M+ ARR)",
-    model_type: "SaaS",
+    model_type: "Hardware + Software",
   },
 };
 
-const RESEARCH_IDEA_SEEDS: ResearchIdeaSeed[] = [
-  { stage: "solo", slug: "eu-accessibility-evidence-packs-for-shopify-merchants", title: "EU accessibility evidence packs for Shopify merchants", summary: "Sell a fixed-price audit + remediation + statement pack through agencies managing 20+ stores; the wedge is evidence and code fixes, not a crowded overlay." },
-  { stage: "solo", slug: "vpat-sprint-for-b2b-saas-companies", title: "VPAT sprint for B2B SaaS companies", summary: "Package procurement-ready accessibility docs and issue triage for startups trying to close enterprise deals without buying a full platform." },
-  { stage: "solo", slug: "accessible-pdf-remediation-for-insurers-and-lenders", title: "Accessible PDF remediation for insurers and lenders", summary: "Start with policy packets, disclosures, and statements where teams already know they have compliance exposure but no document workflow." },
-  { stage: "solo", slug: "a2l-retrofit-photo-audit-service-for-hvac-shops", title: "A2L retrofit photo-audit service for HVAC shops", summary: "Offer a post-job documentation and checklist product to small contractors that are learning new refrigerant rules on the fly." },
-  { stage: "solo", slug: "refrigerant-log-backfill-service-for-commercial-hvac-contractors", title: "Refrigerant-log backfill service for commercial HVAC contractors", summary: "Clean up historical records and create a repeatable template before shops invest in software." },
-  { stage: "solo", slug: "lead-line-homeowner-outreach-concierge-for-engineering-firms", title: "Lead-line homeowner outreach concierge for engineering firms", summary: "Handle calls, consents, and paperwork for municipalities that have replacement money but no resident-ops muscle." },
-  { stage: "solo", slug: "water-utility-public-inventory-publishing-service", title: "Water-utility public inventory publishing service", summary: "Turn messy spreadsheets into searchable public-facing lead-service-line maps and notice pages for small systems." },
-  { stage: "solo", slug: "dairy-biosecurity-sop-builder-for-regional-vet-groups", title: "Dairy biosecurity SOP builder for regional vet groups", summary: "Sell standardized staff, visitor, and vehicle protocols plus printable field materials to multi-farm networks." },
-  { stage: "solo", slug: "milk-sample-chain-of-custody-setup-for-processors", title: "Milk-sample chain-of-custody setup for processors", summary: "Start as forms, labels, and exception handling for plants that now have testing obligations but weak admin tooling." },
-  { stage: "solo", slug: "registered-apprenticeship-sponsor-application-service-for-school-districts", title: "Registered Apprenticeship sponsor application service for school districts", summary: "Package the DOL guidance into a done-for-you sponsor launch offer for districts entering nontraditional apprenticeships." },
-  { stage: "solo", slug: "apprenticeship-launch-kit-for-small-manufacturers", title: "Apprenticeship launch kit for small manufacturers", summary: "Help local employers become sponsors without buying a full apprenticeship-management system on day one." },
-  { stage: "solo", slug: "prior-auth-denial-taxonomy-cleanup-for-independent-specialty-clinics", title: "Prior-auth denial taxonomy cleanup for independent specialty clinics", summary: "Normalize payer denial language into something a practice manager can actually route and act on." },
-  { stage: "solo", slug: "referral-packet-standardization-service-for-rural-hospitals", title: "Referral-packet standardization service for rural hospitals", summary: "Sell intake packet cleanup to sites where incomplete referrals still trigger scheduling and auth delays." },
-  { stage: "solo", slug: "food-traceability-record-mapping-sprint-for-berry-greens-and-cheese-brands", title: "Food-traceability record-mapping sprint for berry, greens, and cheese brands", summary: "Start with the operations binder and spreadsheet layer, not a full ERP replacement." },
-  { stage: "solo", slug: "supplier-document-chase-desk-for-food-hubs", title: "Supplier document chase desk for food hubs", summary: "Be the outsourced ops desk that keeps certifications, lot-code rules, and traceability contacts current." },
-  { stage: "solo", slug: "osha-inspection-document-vault-setup-for-specialty-subcontractors", title: "OSHA inspection document vault setup for specialty subcontractors", summary: "Build the central folder structure, training matrix, and retrieval workflow before an inspection happens." },
-  { stage: "solo", slug: "subcontractor-training-proof-concierge-for-mid-size-gcs", title: "Subcontractor training-proof concierge for mid-size GCs", summary: "Collect, verify, and organize certs from the long tail of subs that are still sending screenshots and PDFs." },
-  { stage: "solo", slug: "part-107-waiver-packet-service-for-inspection-firms", title: "Part 107 waiver packet service for inspection firms", summary: "Start with roofing and mapping companies that fly often enough to need documentation but not a compliance department." },
-  { stage: "solo", slug: "drone-compliance-back-office-for-utility-vegetation-contractors", title: "Drone compliance back office for utility vegetation contractors", summary: "Handle registration, waiver records, pilot documentation, and audit prep as a recurring service." },
-  { stage: "solo", slug: "freight-detention-and-tonu-evidence-assembly-for-small-carriers", title: "Freight detention and TONU evidence assembly for small carriers", summary: "Build the photo, timestamp, and document package that owner-operators need to actually win disputes." },
-  { stage: "solo", slug: "broker-transparency-request-prep-for-small-fleets", title: "Broker-transparency request prep for small fleets", summary: "Package transaction-record requests, response tracking, and escalation docs for carriers that will not buy a full freight stack." },
-  { stage: "solo", slug: "cyber-disclosure-evidence-room-setup-for-microcap-public-companies", title: "Cyber-disclosure evidence-room setup for microcap public companies", summary: "Stand up a repeatable memo, artifact, and sign-off structure for teams facing SEC disclosure expectations with tiny legal benches." },
-  { stage: "solo", slug: "board-cyber-governance-calendar-and-memo-pack", title: "Board cyber-governance calendar and memo pack", summary: "Sell recurring prep for quarterly cyber governance materials to newly public or soon-to-be public companies." },
-  { stage: "solo", slug: "school-district-a2l-equipment-transition-workbook", title: "School-district A2L equipment transition workbook", summary: "Offer facilities teams a fixed-scope inventory, capital-plan, and vendor coordination package instead of complex software." },
-  { stage: "solo", slug: "lead-line-private-side-financing-application-service", title: "Lead-line private-side financing application service", summary: "Help residents and landlords navigate paperwork for replacement programs where money exists but conversions lag." },
-  { stage: "smallTeam", slug: "specialty-clinic-denial-reason-normalizer", title: "Specialty-clinic denial-reason normalizer", summary: "Turn payer responses into a consistent taxonomy and route next actions for GI, rheumatology, and infusion groups." },
-  { stage: "smallTeam", slug: "prior-auth-appeal-qa-workspace", title: "Prior-auth appeal QA workspace", summary: "Review draft appeal packets for missing evidence before staff resubmits and loses another week." },
-  { stage: "smallTeam", slug: "dme-order-completeness-checker", title: "DME order completeness checker", summary: "Catch missing fields, signatures, and clinical-support docs before an order hits a payer or supplier queue." },
-  { stage: "smallTeam", slug: "home-health-intake-packet-gap-detector", title: "Home-health intake packet gap detector", summary: "Score referrals for missing documents and build the chase list before intake staff wastes cycles." },
-  { stage: "smallTeam", slug: "infusion-auth-renewal-tracker", title: "Infusion auth-renewal tracker", summary: "Focus on recurring biologics where expiring approvals quietly wreck schedules and cash flow." },
-  { stage: "smallTeam", slug: "rural-referral-intake-workbench", title: "Rural referral intake workbench", summary: "Give small hospitals a lightweight hub for referral status, missing docs, and payer handoffs without a giant care-coordination platform." },
-  { stage: "smallTeam", slug: "prior-auth-api-sandbox-for-ehr-vendors", title: "Prior-auth API sandbox for EHR vendors", summary: "Simulate payer endpoints and edge cases so health-tech teams can test integrations before production." },
-  { stage: "smallTeam", slug: "payer-metrics-page-generator-for-regional-health-plans", title: "Payer metrics page generator for regional health plans", summary: "Publish the public prior-auth metrics and denial summaries CMS now expects without building a custom reporting stack." },
-  { stage: "smallTeam", slug: "eaa-regression-monitor-for-b2b-saas-release-teams", title: "EAA regression monitor for B2B SaaS release teams", summary: "Watch product changes for accessibility regressions and turn them into engineering tickets tied to actual releases." },
-  { stage: "smallTeam", slug: "accessible-document-qa-api", title: "Accessible-document QA API", summary: "Scan PDFs, statements, and customer notices for machine-readable failures and route only the broken assets to humans." },
-  { stage: "smallTeam", slug: "vpat-evidence-collector-for-sales-engineers", title: "VPAT evidence collector for sales engineers", summary: "Pull accessibility evidence from tickets, audits, and release notes into one answer bank for enterprise deals." },
-  { stage: "smallTeam", slug: "a2l-parts-compatibility-checker-for-hvac-distributors", title: "A2L parts-compatibility checker for HVAC distributors", summary: "Let counter staff and contractors confirm fit, refrigerant class, and install caveats faster than a PDF hunt." },
-  { stage: "smallTeam", slug: "property-manager-refrigerant-transition-reserve-planner", title: "Property-manager refrigerant transition reserve planner", summary: "Model which assets are most exposed and turn that into a capital plan for multi-site owners." },
-  { stage: "smallTeam", slug: "refrigerant-job-log-vault-for-multi-tech-contractors", title: "Refrigerant job-log vault for multi-tech contractors", summary: "Centralize before/after photos, leak records, and equipment history across crews that still operate from text threads." },
-  { stage: "smallTeam", slug: "hotel-and-senior-living-chiller-transition-planner", title: "Hotel and senior-living chiller transition planner", summary: "Start with portfolios that have aging equipment, tight downtime windows, and under-built documentation." },
-  { stage: "smallTeam", slug: "lead-line-private-side-scheduling-portal", title: "Lead-line private-side scheduling portal", summary: "Coordinate homeowners, plumbers, utility crews, and inspections around one replacement event." },
-  { stage: "smallTeam", slug: "replacement-contractor-capacity-board-for-municipal-lead-programs", title: "Replacement-contractor capacity board for municipal lead programs", summary: "Show which approved contractors have bandwidth so programs stop stalling at the scheduling layer." },
-  { stage: "smallTeam", slug: "small-utility-customer-consent-workflow-for-line-replacement", title: "Small-utility customer-consent workflow for line replacement", summary: "Handle notice, follow-up, and approval tracking for teams that cannot hire a call center." },
-  { stage: "smallTeam", slug: "service-line-inventory-ux-layer-for-small-water-systems", title: "Service-line inventory UX layer for small water systems", summary: "Put a clean map and resident lookup on top of legacy utility data without replacing the underlying system." },
-  { stage: "smallTeam", slug: "dairy-visitor-and-vehicle-biosecurity-log-app", title: "Dairy visitor and vehicle biosecurity log app", summary: "Give farms a mobile-first logbook that works in bad connectivity and exports clean audit trails." },
-  { stage: "smallTeam", slug: "bulk-milk-pickup-exception-tracker", title: "Bulk-milk pickup exception tracker", summary: "Catch missed pickups, chain-of-custody breaks, and positive-sample escalation paths for regional processors." },
-  { stage: "smallTeam", slug: "food-traceability-24-hour-retrieval-layer", title: "Food-traceability 24-hour retrieval layer", summary: "Focus on record retrieval and cross-supplier stitching for covered brands instead of pretending to be the system of record." },
-  { stage: "smallTeam", slug: "supplier-onboarding-crm-for-ftl-brands", title: "Supplier onboarding CRM for FTL brands", summary: "Keep traceability contacts, lot-code rules, and document status organized across a fragmented supplier base." },
-  { stage: "smallTeam", slug: "recall-drill-simulator-for-mid-market-food-brands", title: "Recall drill simulator for mid-market food brands", summary: "Run tabletop scenarios and surface where records, contacts, and lot links are still broken." },
-  { stage: "smallTeam", slug: "apprenticeship-supervisor-text-check-in-app", title: "Apprenticeship supervisor text check-in app", summary: "Confirm OJT hours and milestone progress from the field without forcing supervisors into a portal." },
-  { stage: "smallTeam", slug: "ojt-hour-anomaly-detector", title: "OJT hour anomaly detector", summary: "Flag suspicious or incomplete apprentice logs before they become a compliance or completion problem." },
-  { stage: "smallTeam", slug: "apprenticeship-completion-risk-dashboard", title: "Apprenticeship completion-risk dashboard", summary: "Help intermediaries spot which employers or cohorts are drifting before drop-off becomes visible in annual reporting." },
-  { stage: "smallTeam", slug: "walkaround-inspection-prep-app-for-small-gcs", title: "Walkaround inspection prep app for small GCs", summary: "Centralize the checklists, representative designations, and key documents a site lead needs on inspection day." },
-  { stage: "smallTeam", slug: "near-miss-voice-note-triage-for-field-crews", title: "Near-miss voice-note triage for field crews", summary: "Turn rough voice memos into categorized incidents and follow-up tasks instead of letting them die in group chats." },
-  { stage: "smallTeam", slug: "subcontractor-credential-wallet-for-construction-subs", title: "Subcontractor credential wallet for construction subs", summary: "Give small subs one reusable packet for training, insurance, and workforce docs they can share job to job." },
-  { stage: "smallTeam", slug: "remote-id-registry-for-local-drone-service-fleets", title: "Remote ID registry for local drone-service fleets", summary: "Start with survey, roof, and inspection firms that manage just enough aircraft to feel pain but not enough to buy heavy software." },
-  { stage: "smallTeam", slug: "drone-waiver-evidence-locker", title: "Drone waiver evidence locker", summary: "Store prior approvals, operating procedures, and mission evidence so pilots can reuse documentation instead of recreating it." },
-  { stage: "smallTeam", slug: "agricultural-spray-compliance-logbook", title: "Agricultural spray compliance logbook", summary: "Focus on operators juggling drone, chemical, and state-record requirements rather than generic drone ops." },
-  { stage: "smallTeam", slug: "carrier-onboarding-reuse-vault-across-freight-brokers", title: "Carrier onboarding reuse vault across freight brokers", summary: "Let carriers maintain one verified packet and push it to multiple brokers instead of rekeying everything." },
-  { stage: "smallTeam", slug: "load-exception-inbox-for-small-importers", title: "Load-exception inbox for small importers", summary: "Turn scattered ETA changes, holds, and appointment issues into one operational queue for 5-50 container importers." },
-  { stage: "domainExpert", slug: "community-oncology-auth-to-scheduling-workbench", title: "Community-oncology auth-to-scheduling workbench", summary: "Tie payer status, medical necessity docs, and infusion-chair scheduling together for independent oncology groups." },
-  { stage: "domainExpert", slug: "drug-prior-auth-documentation-rules-simulator", title: "Drug prior-auth documentation rules simulator", summary: "Help plans, PBMs, and vendors test how proposed CMS drug-related API rules would hit their current workflows." },
-  { stage: "domainExpert", slug: "payer-api-conformance-test-harness", title: "Payer API conformance test harness", summary: "Sell to payers and vendors that need to validate FHIR prior-auth behavior without building their own deep test bench." },
-  { stage: "domainExpert", slug: "denial-benchmark-exchange-for-independent-provider-groups", title: "Denial benchmark exchange for independent provider groups", summary: "Aggregate normalized denial patterns across peers so small groups can see what is payer-specific versus staff-specific." },
-  { stage: "domainExpert", slug: "pediatric-therapy-referral-to-authorization-os", title: "Pediatric therapy referral-to-authorization OS", summary: "Speech, OT, and PT clinics still lose weeks between referral, auth, and first appointment; the wedge is the pre-visit workflow." },
-  { stage: "domainExpert", slug: "multi-site-lead-replacement-equity-planner", title: "Multi-site lead-replacement equity planner", summary: "Help cities prioritize replacements by risk, readiness, and customer-response rate rather than just pipe age." },
-  { stage: "domainExpert", slug: "utility-route-optimizer-for-customer-approved-replacements", title: "Utility route optimizer for customer-approved replacements", summary: "Combine crew capacity with consent windows so approved jobs actually convert into completed work." },
-  { stage: "domainExpert", slug: "funding-workflow-os-for-lead-replacement-contractors-and-engineers", title: "Funding-workflow OS for lead-replacement contractors and engineers", summary: "Track program eligibility, funding source, resident paperwork, and reimbursement status in one place." },
-  { stage: "domainExpert", slug: "multifamily-lead-line-tenant-communication-platform", title: "Multifamily lead-line tenant communication platform", summary: "Focus on buildings where owners, tenants, and utilities all need different messages and access windows." },
-  { stage: "domainExpert", slug: "grocery-cold-chain-refrigerant-conversion-pm-tool", title: "Grocery cold-chain refrigerant conversion PM tool", summary: "Sell to regional grocery operators managing phased retrofit work across dozens of stores." },
-  { stage: "domainExpert", slug: "school-facilities-a2l-readiness-tracker", title: "School facilities A2L readiness tracker", summary: "Coordinate equipment inventory, training status, vendor work, and budget timing across district campuses." },
-  { stage: "domainExpert", slug: "dairy-interstate-movement-testing-scheduler", title: "Dairy interstate-movement testing scheduler", summary: "Start with operators moving animals across state lines who now have recurring testing and documentation friction." },
-  { stage: "domainExpert", slug: "dairy-processor-positive-sample-escalation-dashboard", title: "Dairy processor positive-sample escalation dashboard", summary: "Manage who knows what, when milk moves, and which downstream steps fire after a positive result." },
-  { stage: "domainExpert", slug: "produce-grower-lot-code-translation-layer", title: "Produce grower lot-code translation layer", summary: "Normalize farm, packer, and buyer codes so traceability records are usable during a real event." },
-  { stage: "domainExpert", slug: "food-hub-supplier-readiness-crm-for-2028-traceability", title: "Food-hub supplier readiness CRM for 2028 traceability", summary: "Sell to aggregators that are too small for enterprise suites but too complex for shared drives." },
-  { stage: "domainExpert", slug: "k-12-apprenticeship-intermediary-os", title: "K-12 apprenticeship intermediary OS", summary: "Give districts a lightweight system for employer relationships, student placement, and compliance proof without buying an enterprise AMS." },
-  { stage: "domainExpert", slug: "cyber-apprenticeship-sponsor-network-manager", title: "Cyber apprenticeship sponsor network manager", summary: "Focus on the long-tail employer and mentor coordination problem instead of generic apprenticeship tracking." },
-  { stage: "domainExpert", slug: "municipal-digital-accessibility-procurement-checker", title: "Municipal digital-accessibility procurement checker", summary: "Review RFPs, vendor claims, and delivered assets so cities stop buying inaccessible software and PDFs." },
-  { stage: "domainExpert", slug: "transit-ticketing-eaa-conformance-tracker", title: "Transit ticketing EAA conformance tracker", summary: "Start with regional transit operators and vendors that have multiple mobile, kiosk, and web surfaces to document." },
-  { stage: "domainExpert", slug: "government-vendor-accessible-document-pipeline", title: "Government-vendor accessible-document pipeline", summary: "Handle remediation, versioning, and approval for the recurring PDFs and notices public contractors keep shipping." },
-  { stage: "domainExpert", slug: "construction-insurer-underwriting-data-pack-for-specialty-trades", title: "Construction-insurer underwriting data pack for specialty trades", summary: "Pull safety, training, and near-miss evidence into a cleaner package for renewals and audits." },
-  { stage: "domainExpert", slug: "utility-drone-storm-response-workpack-generator", title: "Utility drone storm-response workpack generator", summary: "Build preapproved mission packets, pilot assignments, and chain-of-custody docs for outage-response contractors." },
-  { stage: "domainExpert", slug: "data-center-interconnection-document-room", title: "Data-center interconnection document room", summary: "Sell to developers that need one controlled workspace for utility studies, land, permitting, and power negotiations." },
-  { stage: "domainExpert", slug: "generator-co-location-diligence-tracker-for-large-load-developers", title: "Generator co-location diligence tracker for large-load developers", summary: "Focus on the checklist and red-flag workflow around behind-the-meter or co-located generation deals." },
-  { stage: "domainExpert", slug: "demand-response-enrollment-ops-for-c-i-aggregators", title: "Demand-response enrollment ops for C&I aggregators", summary: "Handle meter, contract, site-contact, and readiness workflows across a messy commercial portfolio." },
-  { stage: "venture", slug: "brownfield-data-center-site-aggregator-with-utility-readiness-data", title: "Brownfield data-center site aggregator with utility-readiness data", summary: "Package substations, land status, water, and local-process timelines into something buyers can actually underwrite." },
-  { stage: "venture", slug: "behind-the-meter-flexibility-platform-for-secondary-data-centers", title: "Behind-the-meter flexibility platform for secondary data centers", summary: "Start with smaller AI and inference sites that need dispatchable backup, not hyperscaler-style bespoke projects." },
-  { stage: "venture", slug: "lead-line-financing-marketplace-with-municipal-escrow", title: "Lead-line financing marketplace with municipal escrow", summary: "Connect contractors, homeowners, and program funds so private-side replacement does not become the blocking step." },
-  { stage: "venture", slug: "refrigerant-recovery-and-resale-exchange-for-commercial-retrofits", title: "Refrigerant recovery and resale exchange for commercial retrofits", summary: "Build around verified chain-of-custody and quality testing, not a generic industrial marketplace." },
-  { stage: "venture", slug: "independent-provider-prior-auth-benchmarking-network", title: "Independent-provider prior-auth benchmarking network", summary: "Aggregate denial, turnaround, and appeal outcomes across small providers that individually lack negotiating leverage." },
-  { stage: "venture", slug: "regional-dairy-biosecurity-mutual-with-software-rails", title: "Regional dairy biosecurity mutual with software rails", summary: "Pair shared protocols, audits, and outbreak-response tooling with pooled financial protection." },
-  { stage: "venture", slug: "large-load-interconnection-brokerage-for-industrial-parks", title: "Large-load interconnection brokerage for industrial parks", summary: "Help site owners package demand flexibility, generation options, and queue strategy for power-hungry tenants." },
-  { stage: "venture", slug: "drone-compliant-utility-vegetation-contractor-network", title: "Drone-compliant utility vegetation contractor network", summary: "Standardize pilot, aircraft, and mission documentation across a fragmented contractor base and sell to utilities." },
-  { stage: "venture", slug: "distributed-cold-storage-load-flex-aggregator", title: "Distributed cold-storage load-flex aggregator", summary: "Turn regional refrigerated warehouses into a dispatchable load portfolio with audit-friendly operational controls." },
-  { stage: "venture", slug: "food-recall-working-capital-and-execution-platform", title: "Food-recall working-capital and execution platform", summary: "Finance the short-term chaos while bundling the ops layer needed to trace, contact, and document." },
-  { stage: "venture", slug: "local-apprenticeship-marketplace-tied-to-employers-and-classrooms", title: "Local apprenticeship marketplace tied to employers and classrooms", summary: "Pair open roles, approved training providers, and sponsor compliance into one supply-and-demand network." },
-  { stage: "venture", slug: "heat-pump-retrofit-underwriting-platform-for-multifamily-lenders", title: "Heat-pump retrofit underwriting platform for multifamily lenders", summary: "Focus on project readiness, contractor capacity, and utility assumptions rather than pure climate reporting." },
-  { stage: "venture", slug: "shared-compliance-os-for-small-water-systems", title: "Shared compliance OS for small water systems", summary: "Bundle lead-line, public notice, sampling, and contractor coordination for utilities too small to build internal ops teams." },
-  { stage: "venture", slug: "cyber-incident-counsel-and-ir-coordination-platform-for-microcaps", title: "Cyber-incident counsel and IR coordination platform for microcaps", summary: "Give outside counsel, IR, finance, and security a controlled clock-and-artifact workspace during material incidents." },
-  { stage: "venture", slug: "regulated-contractor-credential-network-for-utilities-and-primes", title: "Regulated-contractor credential network for utilities and primes", summary: "Standardize safety, licensing, and training proof across the long tail of field contractors that still email PDFs." },
-];
-
-function includesAny(text: string, needles: string[]) {
-  return needles.some((needle) => text.includes(needle));
-}
-
-function classifyIdea(seed: ResearchIdeaSeed): Classification {
-  const text = `${seed.title} ${seed.summary}`.toLowerCase();
-
-  if (includesAny(text, ["data-center", "large-load", "interconnection", "co-location", "demand-response"])) {
-    return {
-      industry: "Energy & Grid Infrastructure",
-      niche: "Large-load infrastructure",
-      audience: "B2B",
-      distribution_play: "Direct sales",
-      moat: "Regulatory access",
-      demand_trend: "Accelerating",
-      timing_rationale: "NERC's 2025 Long-Term Reliability Assessment and FERC's December 18, 2025 large-load actions made AI-driven power demand and interconnection bottlenecks explicit planning issues. The coordination layer around load, siting, and power access is still immature.",
-    };
-  }
-
-  if (includesAny(text, ["cyber", "incident", "public companies", "microcap", "ir coordination", "board"])) {
-    return {
-      industry: "Cybersecurity",
-      niche: "Disclosure operations",
-      audience: "B2B",
-      distribution_play: "Direct sales",
-      moat: "Regulatory access",
-      demand_trend: "Steady growth",
-      timing_rationale: "SEC cyber-incident disclosure expectations are now part of normal public-company governance, but smaller issuers still lack enterprise-sized legal and security teams. That keeps the evidence, clock-management, and coordination problem acute in 2026.",
-    };
-  }
-
-  if (includesAny(text, ["prior-auth", "payer", "clinic", "referral", "oncology", "infusion", "dme", "ehr", "hospital", "pbm", "therapy"])) {
-    return {
-      industry: "Healthcare & Med-Adjacent",
-      niche: "Prior auth workflows",
-      audience: "B2B",
-      distribution_play: "Direct sales",
-      moat: "Proprietary data",
-      demand_trend: "Accelerating",
-      timing_rationale: "CMS's Interoperability and Prior Authorization Final Rule introduced new operational deadlines beginning on January 1, 2026, including faster response windows and public metrics. That turns messy authorization workflows into budgeted software projects.",
-    };
-  }
-
-  if (includesAny(text, ["accessibility", "vpat", "accessible", "eaa", "pdf remediation"])) {
-    return {
-      industry: "Accessibility & Compliance",
-      niche: "Digital accessibility",
-      audience: "B2B",
-      distribution_play: "Partnerships",
-      moat: "Speed of execution",
-      demand_trend: "Accelerating",
-      timing_rationale: "The European Accessibility Act entered into application on June 28, 2025. That moved accessibility from a deferred initiative to a compliance and procurement issue for private-sector software, documents, and digital services selling into Europe.",
-    };
-  }
-
-  if (includesAny(text, ["apprenticeship", "ojt", "district", "classroom", "sponsor"])) {
-    return {
-      industry: "Education & Workforce",
-      niche: "Apprenticeship operations",
-      audience: "B2B",
-      distribution_play: "Partnerships",
-      moat: "Distribution",
-      demand_trend: "Steady growth",
-      timing_rationale: "The Department of Labor published updated Registered Apprenticeship guidance on March 9, 2026, with an explicit push toward faster determinations and clearer sponsor expectations. That lowers coordination friction while increasing demand for workable operating systems.",
-    };
-  }
-
-  if (includesAny(text, ["drone", "remote id", "part 107", "spray"])) {
-    return {
-      industry: "Industrial & Drone Ops",
-      niche: "Drone compliance",
-      audience: "B2B",
-      distribution_play: "Direct sales",
-      moat: "Regulatory access",
-      demand_trend: "Steady growth",
-      timing_rationale: "Remote ID is now a baseline operating requirement, and Part 107 waiver workflows still create real paperwork overhead in 2026. Commercial operators increasingly need a reusable compliance layer rather than one-off mission docs.",
-    };
-  }
-
-  if (includesAny(text, ["freight", "carrier", "broker", "importer", "load", "detention", "tonu"])) {
-    return {
-      industry: "Logistics & Supply Chain",
-      niche: "Carrier and importer ops",
-      audience: "B2B",
-      distribution_play: "Cold outbound",
-      moat: "Distribution",
-      demand_trend: "Steady growth",
-      timing_rationale: "FMCSA's broker-transparency rulemaking keeps pressure on documentation and transaction records even before every detail is finalized. Smaller carriers and importers still lack purpose-built tooling for the evidence and exception layer.",
-    };
-  }
-
-  if (includesAny(text, ["dairy", "milk", "food", "traceability", "recall", "grower", "processor", "grocery"])) {
-    return {
-      industry: "Food & Agriculture",
-      niche: "Traceability and biosecurity",
-      audience: "B2B",
-      distribution_play: "Direct sales",
-      moat: "Proprietary data",
-      demand_trend: "Steady growth",
-      timing_rationale: "USDA's National Milk Testing Strategy kept dairy testing and biosecurity workflows active into 2026, while FDA's food-traceability push still matters even after enforcement moved to July 20, 2028. Operators now have time to buy lighter readiness tools instead of waiting for giant ERP projects.",
-    };
-  }
-
-  if (includesAny(text, ["a2l", "hvac", "refrigerant", "chiller", "heat-pump", "cold-storage"])) {
-    return {
-      industry: "Climate & Energy",
-      niche: "Refrigerant transition",
-      audience: "B2B",
-      distribution_play: "Partnerships",
-      moat: "Distribution",
-      demand_trend: "Accelerating",
-      timing_rationale: "EPA technology-transition restrictions began hitting equipment categories on January 1, 2025, pushing contractors, distributors, and facilities teams into new refrigerant workflows. The rules are already real, but much of the long tail still runs on PDFs and tribal knowledge.",
-    };
-  }
-
-  if (includesAny(text, ["lead-line", "service-line", "water system", "water-utility", "line replacement", "municipal"])) {
-    return {
-      industry: "Water & Utilities",
-      niche: "Lead-line replacement ops",
-      audience: "B2B2C",
-      distribution_play: "Direct sales",
-      moat: "Regulatory access",
-      demand_trend: "Accelerating",
-      timing_rationale: "EPA's Lead and Copper Rule Improvements pushed water systems toward full lead service-line replacement programs, with resident communication and scheduling now becoming the operational bottleneck. The funding exists in many regions, but execution is still fragmented.",
-    };
-  }
-
-  if (includesAny(text, ["osha", "construction", "subcontractor", "gc", "safety", "underwriting"])) {
-    return {
-      industry: "Construction & Skilled Trades",
-      niche: "Field compliance ops",
-      audience: "B2B",
-      distribution_play: "Partnerships",
-      moat: "Distribution",
-      demand_trend: "Steady growth",
-      timing_rationale: "OSHA's walkaround rule became effective on May 31, 2024, and many specialty contractors and general contractors still have thin operational processes around inspections, training proof, and safety evidence. They need workflow readiness rather than heavy enterprise EHS suites.",
-    };
-  }
-
-  return {
+const THEMES: Record<ThemeKey, ThemeDefinition> = {
+  accounting: {
     industry: "Vertical SaaS",
-    niche: "Workflow automation",
     audience: "B2B",
-    distribution_play: "Direct sales",
+    niche: "Small-firm accounting ops",
+    model_type: "SaaS",
+    moat: "Brand & community",
+    distribution_play: "Community-led",
+    demand_trend: "Steady growth",
+    market_size_summary: "Solo and small accounting firms represent a large, fragmented buyer base with meaningful recurring spend and low appetite for enterprise software. A product that owns one painful workflow at $100-$500 per month can become a durable niche business long before it needs broad-firm penetration.",
+    timing_rationale: "Karbon and Intuit are both still investing in workflow layers for tax and bookkeeping firms, and practitioners continue discussing practice-management gaps in public communities. That combination signals a live software budget, not just founder imagination.",
+    sources: [
+      src("blog", 11, "https://www.globenewswire.com/news-release/2025/06/04/3093624/0/en/Karbon-Launches-End-to-End-Tax-Workflows-AI-Innovations-and-Practice-Intelligence-to-Accelerate-Firm-Growth.html", "Karbon launches end-to-end tax workflows and AI innovations", "Practice-management vendors are still shipping deeper workflow tooling for accountants."),
+      src("blog", 120, "https://investors.intuit.com/news-events/press-releases/detail/235/intuit-proconnect-announces-karbon-partnership-to-deliver-intuit-practice-management-to-tax-professionals", "Intuit ProConnect announces Karbon partnership", "Major tax software distribution validating lightweight practice-management demand."),
+      src("reddit", 21, "https://www.reddit.com/r/Bookkeeping/comments/1sydmst/best_practice_management_software/", "r/Bookkeeping discussion on practice-management software", "Recent thread comparing Karbon, Financial Cents, and other small-firm workflow tools."),
+    ],
+  },
+  industrialMro: {
+    industry: "Logistics & Supply Chain",
+    audience: "B2B",
+    niche: "Obsolete industrial parts",
+    model_type: "SaaS",
+    moat: "Proprietary data",
+    distribution_play: "Cold outbound",
+    demand_trend: "Niche but durable",
+    market_size_summary: "The obsolete-parts problem is narrow but expensive because it is tied to downtime, decommissioning, and non-standard equipment histories. Buyers do not need a giant platform to justify spend here; they need speed, verification, and sourcing confidence.",
+    timing_rationale: "Plants still run aging automation hardware while service brokers and component houses keep publishing guidance on sourcing discontinued parts. The persistence of these operational workarounds suggests the market is still underserved by purpose-built software.",
+    sources: [
+      src("blog", 95, "https://www.controleng.com/services-for-obsolete-electronic-components/", "Control Engineering on services for obsolete electronic components", "Industry trade guidance focused on keeping legacy electronics alive in production."),
+      src("blog", 32, "https://3etech.com/resources/guides/sourcing-obsolete-electronic-components/", "Guide to sourcing obsolete electronic components", "Commercial sourcing workflows still revolve around verification, traceability, and broker relationships."),
+      src("reddit", 19, "https://www.reddit.com/r/PLC/comments/1e9glbe/", "r/PLC discussion on Allen-Bradley obsolescence plans", "Operators are still publicly asking how to source and plan around legacy control hardware."),
+    ],
+  },
+  syntheticData: {
+    industry: "Developer Tools",
+    audience: "B2B",
+    niche: "Synthetic regulated data",
+    model_type: "API / Usage-Based",
+    moat: "Proprietary data",
+    distribution_play: "Product-led growth",
+    demand_trend: "Accelerating",
+    market_size_summary: "Regulated engineering teams increasingly need realistic staging data without moving production records around. This makes synthetic-data infrastructure a real budget line for health-tech, fintech, and enterprise software teams shipping into compliance-heavy environments.",
+    timing_rationale: "Open-source synthetic-data tooling remains active, vendors are adding AI-specific configuration features, and fresh academic work is still benchmarking fidelity and privacy tradeoffs. The category is evolving quickly enough that there is room for narrower wedges on top of the core tooling layer.",
+    sources: [
+      src("blog", 18, "https://www.tonic.ai/blog/agentification-of-test-data-management-meet-structural-agent", "Tonic introduces an agent for structural test-data configuration", "The incumbent category is still investing in workflow automation around synthetic and masked data."),
+      src("arxiv", 44, "https://arxiv.org/abs/2504.01908", "Benchmarking Synthetic Tabular Data: A Multi-Dimensional Evaluation Framework", "Recent paper on how to evaluate synthetic data quality beyond one metric."),
+      src("github", 60, "https://github.com/sdv-dev/SDV", "Synthetic Data Vault on GitHub", "Active open-source baseline that many teams already use as a starting point."),
+    ],
+  },
+  complianceReadiness: {
+    industry: "Legal & Compliance",
+    audience: "B2B",
+    niche: "Trust and audit readiness",
+    model_type: "SaaS",
     moat: "Speed of execution",
-    demand_trend: "Emerging",
-    timing_rationale: "The underlying workflow changed materially in 2025-2026, but the market is still being served by spreadsheets, inboxes, and generic project tools. That gap creates room for a focused founder wedge before broader suites react.",
-  };
+    distribution_play: "Partnerships",
+    demand_trend: "Steady growth",
+    market_size_summary: "Startups selling into larger customers are forced into security reviews, policy requests, and audit prep long before they are ready for heavy enterprise governance software. That creates a wide downmarket wedge for lightweight readiness tooling and productized delivery.",
+    timing_rationale: "Vanta’s continued scale and ongoing founder discussion around SOC 2 pressure both indicate that the problem has moved downmarket. Teams are not debating whether this work exists; they are debating how to survive it with tiny headcount.",
+    sources: [
+      src("blog", 300, "https://www.vanta.com/resources/vanta-announces-series-c", "Vanta announces $150M Series C", "Compliance automation remains a scaled category rather than a fringe workflow."),
+      src("hackernews", 65, "https://news.ycombinator.com/item?id=46706083", "Ask HN: Why does SOC 2 feel so hard for early-stage startups?", "Founders openly discussing audit burden and evidence collection pain."),
+      src("reddit", 150, "https://www.reddit.com/r/SaaS/comments/1p87eed/customer_asked_if_we_have_soc2_i_said_working_on/", "r/SaaS post about enterprise leads asking for SOC 2", "The compliance request now shows up early in startup sales cycles."),
+    ],
+  },
+  oncology: {
+    industry: "Healthcare & Med-Adjacent",
+    audience: "B2C",
+    niche: "Precision oncology navigation",
+    model_type: "Transactional",
+    moat: "Regulatory access",
+    distribution_play: "Partnerships",
+    demand_trend: "Accelerating",
+    market_size_summary: "Cancer care is a high-value, high-friction workflow where second opinions, genomics, and trial coordination carry direct willingness to pay. Even niche products can become meaningful businesses because the operational pain is clinical, emotional, and expensive.",
+    timing_rationale: "More oncology decisions are now genomics-informed, major cancer centers continue to promote structured second-opinion programs, and new research keeps showing that deeper profiling changes care recommendations. That is enough to support focused workflow businesses around record gathering, navigation, and review.",
+    sources: [
+      src("other", 72, "https://www.nature.com/articles/s41698-025-00942-5", "Study on comprehensive genomic profiling changing treatment recommendations", "Recent precision-oncology evidence linking deeper profiling to changed care plans."),
+      src("other", 14, "https://www.dana-farber.org/appointments-second-opinions/second-opinion-program", "Dana-Farber second-opinion program", "Top-tier cancer centers continue to run explicit second-opinion workflows."),
+      src("blog", 12, "https://www.mskcc.org/news/what-to-know-about-getting-second-opinion-after-cancer-diagnosis", "MSK on getting a cancer second opinion", "Patient demand for second opinions is explicit enough to warrant dedicated education and intake systems."),
+    ],
+  },
+  counterUas: {
+    industry: "Cybersecurity",
+    audience: "B2B",
+    niche: "Critical-infrastructure counter-UAS",
+    model_type: "Hardware + Software",
+    moat: "Regulatory access",
+    distribution_play: "Direct sales",
+    demand_trend: "Accelerating",
+    market_size_summary: "Utilities, energy sites, ports, and defense-adjacent operators are spending against drone threat models that sit between physical security and regulated infrastructure. The buyer count is limited, but contract values and maintenance potential are high.",
+    timing_rationale: "The market is moving from awareness to deployed systems: Anduril is winning international C-UAS contracts, CISA is publishing critical-infrastructure guidance, and DoD keeps updating homeland policy posture. That creates room for software, evidence, and deployment workflows around the hardware stack.",
+    sources: [
+      src("blog", 14, "https://www.anduril.com/news/anduril-awarded-dutch-ministry-of-defence-cuas-contract", "Anduril awarded Dutch Ministry of Defence C-UAS contract", "Counter-UAS procurement is moving into fielded international programs."),
+      src("blog", 40, "https://www.cisa.gov/topics/physical-security/be-air-aware/protect-critical-infrastructure-and-public-gatherings", "CISA guidance on protecting critical infrastructure from UAS threats", "Government guidance now treats drone threats as an operational planning issue."),
+      src("other", 90, "https://media.defense.gov/2026/Feb/10/2003873921/-1/-1/1/FACT-SHEET-C-UAS-POLICY-IN-THE-US-HOMELAND.PDF", "DoD fact sheet on U.S. homeland counter-UAS policy", "Homeland counter-UAS authorities and policy scaffolding continue to expand."),
+    ],
+  },
+  agentInference: {
+    industry: "AI Infrastructure",
+    audience: "B2B",
+    niche: "Agent inference performance",
+    model_type: "Hardware + Software",
+    revenue_ceiling: "Venture ($10M+ ARR)",
+    moat: "Capital intensity",
+    distribution_play: "Direct sales",
+    demand_trend: "Accelerating",
+    market_size_summary: "As agents spend more tokens on branching, tool calling, retries, and speculative decoding, the cost surface shifts away from simple chat benchmarks. That creates room for performance tooling, benchmarking, and specialized infrastructure focused on real agent traces instead of lab demos.",
+    timing_rationale: "Groq is publicly marketing speculative decoding gains, new research is focusing on schema-aware tool calling, and enterprises are now measuring agent workloads separately from chat. The workload shape is specific enough to support focused products rather than generic inference claims.",
+    sources: [
+      src("blog", 25, "https://groq.com/groq-first-generation-14nm-chip-just-got-a-6x-speed-boost-introducing-llama-3-1-70b-speculative-decoding-on-groqcloud/", "Groq launches speculative decoding endpoint with large speed gains", "Speculative decoding is now a commercial performance wedge, not just an academic curiosity."),
+      src("blog", 18, "https://groq.com/blog/inside-the-lpu-deconstructing-groq-speed", "Inside the LPU: deconstructing Groq speed", "Low-latency inference architecture is being framed around real workload behavior."),
+      src("arxiv", 36, "https://arxiv.org/abs/2604.13519", "ToolSpec: accelerating tool calling with schema-aware speculative decoding", "Fresh research focused specifically on tool-calling traces and decoding behavior."),
+    ],
+  },
+  agentOrchestration: {
+    industry: "AI Infrastructure",
+    audience: "B2B",
+    niche: "Enterprise agent orchestration",
+    model_type: "SaaS",
+    revenue_ceiling: "Venture ($10M+ ARR)",
+    moat: "Network effects",
+    distribution_play: "Direct sales",
+    demand_trend: "Accelerating",
+    market_size_summary: "Mid-market and enterprise teams now have enough internal agents, automations, and vendor stacks to need shared control planes. The budget shows up as reliability, permissioning, and observability spend rather than generic AI experimentation.",
+    timing_rationale: "Anthropic’s Model Context Protocol made tool schemas portable, while Microsoft and others are productizing multi-agent orchestration patterns. The market has moved past one-bot demos and into fleet-management problems.",
+    sources: [
+      src("blog", 160, "https://www.anthropic.com/research/model-context-protocol", "Anthropic introduces the Model Context Protocol", "Portable tool schemas make shared agent infrastructure substantially more realistic."),
+      src("blog", 30, "https://devblogs.microsoft.com/agent-framework/semantic-kernel-multi-agent-orchestration/", "Microsoft on Semantic Kernel multi-agent orchestration", "Large platform vendors are standardizing multi-agent workflow patterns."),
+      src("blog", 10, "https://opensource.microsoft.com/blog/2026/05/14/conductor-deterministic-orchestration-for-multi-agent-ai-workflows/", "Conductor for deterministic multi-agent orchestration", "Recent tooling focused on safety limits, workflow control, and cross-model orchestration."),
+    ],
+  },
+  priorAuth: {
+    industry: "Healthcare & Med-Adjacent",
+    audience: "B2B",
+    niche: "Prior authorization operations",
+    model_type: "SaaS",
+    moat: "Proprietary data",
+    distribution_play: "Direct sales",
+    demand_trend: "Accelerating",
+    market_size_summary: "Prior authorization is a universal admin burden across specialty care, home health, DME, and payer integrations. Because the workflow touches scheduling, revenue, and patient outcomes, even narrow products can command real ACV if they remove rework or denials.",
+    timing_rationale: "CMS operational deadlines under the Interoperability and Prior Authorization Final Rule started on January 1, 2026, CMS published additional drug-related proposals in April 2026, and the AMA’s May 13, 2026 survey still shows deep physician skepticism and burden. The pain is current and budget-relevant.",
+    sources: [
+      src("other", 145, "https://www.cms.gov/newsroom/fact-sheets/cms-interoperability-prior-authorization-final-rule-cms-0057-f", "CMS Interoperability and Prior Authorization Final Rule", "Federal deadlines now force payers and providers to operationalize more transparent authorization workflows."),
+      src("other", 40, "https://www.cms.gov/newsroom/fact-sheets/2026-cms-interoperability-standards-prior-authorization-drugs-proposed-rule", "CMS proposed rule on interoperability standards and prior authorization for drugs", "Drug-related authorization APIs and standards remain an active policy area in 2026."),
+      src("blog", 11, "https://www.ama-assn.org/practice-management/prior-authorization/ama-prior-authorization-physician-survey", "AMA prior authorization physician survey", "Recent survey data shows physicians still see high burden and low confidence in voluntary payer reform."),
+    ],
+  },
+  accessibility: {
+    industry: "Accessibility & Compliance",
+    audience: "B2B",
+    niche: "Digital accessibility execution",
+    model_type: "Productized Service",
+    moat: "Speed of execution",
+    distribution_play: "Partnerships",
+    demand_trend: "Accelerating",
+    market_size_summary: "Accessibility work is now tied to procurement, international market access, and release-management risk rather than only litigation fear. That makes room for productized services, tooling, and evidence layers that sit below the full-platform vendors.",
+    timing_rationale: "The European Accessibility Act entered into application on June 28, 2025, and WCAG 2 remains the technical baseline many teams must map to across web, app, document, and software surfaces. Accessibility is now a release and compliance workflow, not just an audit event.",
+    sources: [
+      src("other", 330, "https://accessible-eu-centre.ec.europa.eu/content-corner/news/new-era-inclusion-begins-eaa-enters-force-2025-06-27_en", "AccessibleEU on the EAA entering into force", "The legal trigger for digital-accessibility work is already live across Europe."),
+      src("other", 240, "https://digital-strategy.ec.europa.eu/en/policies/web-accessibility", "European Commission web accessibility policy page", "European institutions continue to frame accessibility as an active policy and implementation domain."),
+      src("other", 19, "https://www.w3.org/WAI/standards-guidelines/wcag/", "W3C WCAG 2 overview", "WCAG remains the shared technical standard buyers and delivery teams map accessibility work to."),
+    ],
+  },
+  refrigerantTransition: {
+    industry: "Climate & Energy",
+    audience: "B2B",
+    niche: "A2L refrigerant transition",
+    model_type: "SaaS",
+    moat: "Distribution",
+    distribution_play: "Partnerships",
+    demand_trend: "Accelerating",
+    market_size_summary: "The refrigerant transition creates operational work across contractors, distributors, inspectors, facility owners, and retrofit planners. Buyers do not need a moonshot here; they need documentation, compatibility, training, and project coordination tied to real installs.",
+    timing_rationale: "EPA restrictions bit new equipment categories starting January 1, 2025, AHRI is still publishing transition-specific training, and trade coverage keeps documenting field confusion and shortages around A2L equipment. That means there is active demand for transition-specific workflows today.",
+    sources: [
+      src("other", 9, "https://www.epa.gov/climate-hfcs-reduction/technology-transitions-program", "EPA Technology Transitions Program", "The regulatory transition away from higher-GWP HFCs is active and still evolving."),
+      src("blog", 45, "https://www.ahrinet.org/a2l-video-series", "AHRI A2L video series", "Industry groups are still educating contractors, distributors, and inspectors on A2L handling and code changes."),
+      src("blog", 22, "https://www.achrnews.com/articles/166001-a2ls-advance-despite-regulatory-uncertainty", "ACHR News on A2Ls advancing despite regulatory uncertainty", "Trade coverage shows the transition is underway even while operational uncertainty remains high."),
+    ],
+  },
+  leadLine: {
+    industry: "Water & Utilities",
+    audience: "B2B2C",
+    niche: "Lead-line replacement operations",
+    model_type: "SaaS",
+    moat: "Regulatory access",
+    distribution_play: "Direct sales",
+    demand_trend: "Accelerating",
+    market_size_summary: "Lead-service-line replacement programs sit at the intersection of regulation, resident coordination, contractor management, and public funding. That makes them ideal for workflow software because the bottleneck is operational execution more than strategy.",
+    timing_rationale: "EPA’s Lead and Copper Rule Improvements require systems to identify and replace lead pipes on a defined timeline, while funding and execution support materials continue to expand. Utilities and engineering partners now have both deadlines and budget, but still lack resident-facing operating systems.",
+    sources: [
+      src("other", 140, "https://www.epa.gov/ground-water-and-drinking-water/lead-and-copper-rule-improvements", "EPA Lead and Copper Rule Improvements", "The final rule requires drinking water systems to identify and replace lead pipes within 10 years."),
+      src("other", 90, "https://www.epa.gov/ground-water-and-drinking-water/funding-lead-service-line-replacement", "EPA funding sources for lead service line replacement", "Federal and non-federal funding paths exist specifically for lead-line work."),
+      src("other", 70, "https://www.epa.gov/ground-water-and-drinking-water/planning-and-conducting-lead-service-line-replacement", "EPA planning and conducting lead service line replacement", "EPA is publishing detailed operational guidance for full replacement programs."),
+    ],
+  },
+  dairyBiosecurity: {
+    industry: "Food & Agriculture",
+    audience: "B2B",
+    niche: "Dairy H5N1 operations",
+    model_type: "SaaS",
+    moat: "Regulatory access",
+    distribution_play: "Direct sales",
+    demand_trend: "Steady growth",
+    market_size_summary: "The H5N1 response creates recurring logistics, testing, documentation, and biosecurity workflows across farms, processors, and regulators. These are narrow markets but painful enough to sustain focused vertical products.",
+    timing_rationale: "USDA launched the National Milk Testing Strategy on December 6, 2024, APHIS continues to update guidance and FAQs, and dairy-specific biosecurity materials remain active. The need is operational and immediate, not theoretical.",
+    sources: [
+      src("other", 169, "https://www.usda.gov/about-usda/news/press-releases/2024/12/06/usda-announces-new-federal-order-begins-national-milk-testing-strategy-address-h5n1-dairy-herds", "USDA announces National Milk Testing Strategy", "Federal testing and reporting requirements are now shaping dairy operations."),
+      src("other", 70, "https://www.aphis.usda.gov/national-milk-testing-strategy", "APHIS National Milk Testing Strategy page", "APHIS continues to maintain and update the strategy as a live program."),
+      src("other", 120, "https://www.aphis.usda.gov/livestock-poultry-disease/avian/avian-influenza/hpai-detections/livestock/nmts/faq", "APHIS NMTS FAQ", "Producers and processors still need detailed implementation guidance around testing stages and obligations."),
+    ],
+  },
+  apprenticeship: {
+    industry: "Education & Workforce",
+    audience: "B2B",
+    niche: "Registered apprenticeship operations",
+    model_type: "SaaS",
+    moat: "Distribution",
+    distribution_play: "Partnerships",
+    demand_trend: "Steady growth",
+    market_size_summary: "Employers, school systems, and intermediaries are being pushed into apprenticeship structures without having apprenticeship-native operating tools. This is a classic wedge where process complexity grows faster than incumbent software quality.",
+    timing_rationale: "The Department of Labor released updated Registered Apprenticeship guidance on March 9, 2026, announced new expansion funding on April 13, 2026, and continues to publish fresh participation data in education-linked apprenticeships. That is a strong signal that apprenticeship administration is growing beyond the trades-only core.",
+    sources: [
+      src("other", 76, "https://www.dol.gov/newsroom/releases/eta/eta20260309", "DOL updated guidance for Registered Apprenticeship", "Federal guidance is still changing the operating expectations for sponsors and partners."),
+      src("other", 41, "https://www.dol.gov/newsroom/releases/eta/eta20260413?lang=fa", "DOL announces $85M in apprenticeship expansion funding", "States and intermediaries are still being funded to expand and modernize apprenticeship programs."),
+      src("other", 20, "https://www.apprenticeship.gov/sites/default/files/Education-20260501.pdf", "Education apprentices served, fiscal years 2021-2025", "Fresh apprenticeship participation data shows the model expanding into education pathways."),
+    ],
+  },
+  foodTraceability: {
+    industry: "Food & Agriculture",
+    audience: "B2B",
+    niche: "Food traceability readiness",
+    model_type: "SaaS",
+    moat: "Proprietary data",
+    distribution_play: "Direct sales",
+    demand_trend: "Steady growth",
+    market_size_summary: "Traceability remains a painful problem because it spans suppliers, lot codes, receiving, recalls, and record retrieval across fragmented operators. The compliance delay to 2028 buys time, but it does not remove the work or the budget need.",
+    timing_rationale: "FDA is still actively publishing implementation resources, FAQs, and stakeholder actions around the Food Traceability Rule even after Congress pushed enforcement out to July 20, 2028. That means the market is in preparedness mode rather than dead mode.",
+    sources: [
+      src("other", 25, "https://www.fda.gov/food/food-safety-modernization-act-fsma/fsma-final-rule-requirements-additional-traceability-records-certain-foods", "FDA FSMA final rule for additional traceability records", "The core recordkeeping rule remains the central compliance anchor for covered foods."),
+      src("other", 95, "https://www.fda.gov/food/hfp-constituent-updates/fda-takes-several-actions-related-food-traceability-rule", "FDA actions related to the Food Traceability Rule", "FDA is still investing in implementation materials and stakeholder engagement in 2026."),
+      src("other", 120, "https://www.fda.gov/food/new-era-smarter-food-safety/tracking-and-tracing-food", "FDA tracking and tracing of food overview", "FDA continues to frame traceability as a strategic public-health capability rather than a paperwork exercise."),
+    ],
+  },
+  droneCompliance: {
+    industry: "Industrial & Drone Ops",
+    audience: "B2B",
+    niche: "FAA drone compliance",
+    model_type: "SaaS",
+    moat: "Regulatory access",
+    distribution_play: "Direct sales",
+    demand_trend: "Steady growth",
+    market_size_summary: "Commercial drone operators are still small enough to reject heavyweight aviation software but regulated enough to need documentation, waiver, and authorization workflows. That gap supports narrow compliance and mission-readiness products.",
+    timing_rationale: "Remote ID is now a standing operational requirement, Part 107 waiver workflows are still active, and the FAA continues updating application guidance and authorization processes. The paperwork surface is now durable enough to build on.",
+    sources: [
+      src("other", 430, "https://www.faa.gov/uas/getting_started/remote_id", "FAA Remote Identification of Drones", "Remote ID is now a baseline requirement for registered drone operations."),
+      src("other", 70, "https://www.faa.gov/uas/commercial_operators/part_107_waivers", "FAA Part 107 waivers", "Waivers remain a live path for operations outside standard Part 107 limits."),
+      src("other", 60, "https://www.faa.gov/uas/commercial_operators/part_107_airspace_authorizations", "FAA Part 107 airspace authorizations", "Commercial operators still need a formal pathway for controlled-airspace approvals."),
+    ],
+  },
+  gridInterconnection: {
+    industry: "Energy & Grid Infrastructure",
+    audience: "B2B",
+    niche: "Large-load power coordination",
+    model_type: "SaaS",
+    revenue_ceiling: "Venture ($10M+ ARR)",
+    moat: "Regulatory access",
+    distribution_play: "Direct sales",
+    demand_trend: "Accelerating",
+    market_size_summary: "Large-load coordination around data centers, co-location, interconnection, and demand flexibility is high-value, slow-moving, and deeply document-heavy. That favors workflow and brokerage products because each win supports meaningful contract value.",
+    timing_rationale: "NERC’s 2025 Long-Term Reliability Assessment explicitly calls out data-center and large-load growth, while FERC is forcing PJM and other market participants to clarify co-location and forecasting rules. The pain is no longer speculative; it is on the grid operator agenda.",
+    sources: [
+      src("other", 35, "https://www.nerc.com/globalassets/our-work/assessments/nerc_ltra_2025.pdf", "NERC 2025 Long-Term Reliability Assessment", "NERC explicitly highlights data-center and large-load growth as a planning challenge."),
+      src("other", 160, "https://www.ferc.gov/news-events/news/fact-sheet-ferc-directs-nations-largest-grid-operator-create-new-rules-embrace", "FERC fact sheet on large-load co-location rules", "FERC is forcing new tariff clarity around data centers and co-located generation."),
+      src("other", 250, "https://www.ferc.gov/news-events/news/chairman-rosners-letter-rtosisos-large-load-forecasting", "FERC Chairman letter on large-load forecasting", "Large-load forecasting and queue realism are now explicit regulatory concerns."),
+    ],
+  },
+  freightTransparency: {
+    industry: "Logistics & Supply Chain",
+    audience: "B2B",
+    niche: "Carrier and broker transparency",
+    model_type: "SaaS",
+    moat: "Distribution",
+    distribution_play: "Cold outbound",
+    demand_trend: "Steady growth",
+    market_size_summary: "Owner-operators, small fleets, and importers live inside high-friction exception workflows with thin margins and weak visibility. Narrow tools that resolve disputes, onboarding friction, or broker opacity can win because they touch cash flow directly.",
+    timing_rationale: "FMCSA’s broker-transparency NPRM is active, OOIDA continues to press for stronger enforcement, and litigation around transparency rights remains live. The argument is not whether the workflow matters; it is how quickly it gets modernized.",
+    sources: [
+      src("other", 560, "https://www.fmcsa.dot.gov/regulations/docket-no-fmcsa-2023-0257-rin-2126-ac63-transparency-property-broker-transactions", "FMCSA NPRM on transparency in property broker transactions", "Federal regulators are still actively revising broker recordkeeping and access rules."),
+      src("blog", 120, "https://www.ooida.com/2025/ooida-calls-for-stronger-broker-transparency-regs-to-protect-small-business-truckers/", "OOIDA calls for stronger broker transparency rules", "The largest owner-operator group continues to frame transparency as an urgent small-business issue."),
+      src("blog", 430, "https://www.freightwaves.com/news/tql-faces-federal-lawsuit-over-broker-transparency-dispute", "FreightWaves on TQL broker-transparency dispute", "The issue is active enough to surface in litigation, not just policy commentary."),
+    ],
+  },
+  constructionSafety: {
+    industry: "Construction & Skilled Trades",
+    audience: "B2B",
+    niche: "Inspection and safety ops",
+    model_type: "SaaS",
+    moat: "Distribution",
+    distribution_play: "Partnerships",
+    demand_trend: "Steady growth",
+    market_size_summary: "Construction safety workflows remain fragmented across general contractors, subcontractors, insurers, and job sites. Buyers will pay for products that reduce document chaos, inspection risk, or insurance friction without trying to replace their entire field stack.",
+    timing_rationale: "OSHA’s walkaround rule changed inspection representation in 2024, implementation guidance remains active, and BLS continues to show construction as the deadliest private-sector industry by count. That is enough pressure to support better inspection and recordkeeping tools.",
+    sources: [
+      src("other", 420, "https://www.osha.gov/worker-walkaround/final-rule", "OSHA worker walkaround final rule", "Inspection representation changed recently enough that operating procedures are still catching up."),
+      src("other", 380, "https://www.osha.gov/memos/2024-05-10/interim-guidance-worker-walkaround-representative-designation-process", "OSHA interim guidance for walkaround representative designation", "OSHA had to issue implementation guidance immediately after the rule change."),
+      src("other", 20, "https://www.bls.gov/opub/ted/2026/national-safety-stand-down-highlights-fall-hazards-in-construction.htm", "BLS on construction fall hazards and fatalities", "Construction still leads private-industry workplace deaths, with falls dominating the risk profile."),
+    ],
+  },
+  shiftWork: {
+    industry: "Education & Workforce",
+    audience: "B2C",
+    niche: "Predictable scheduling",
+    model_type: "SaaS",
+    moat: "Network effects",
+    distribution_play: "Community-led",
+    demand_trend: "Steady growth",
+    market_size_summary: "Scheduling instability remains a real pain for hourly workers and a compliance cost for multi-location employers. The wedge exists both on the worker side and the employer evidence side because predictable scheduling rules create recurring recordkeeping and premium-pay workflows.",
+    timing_rationale: "New York City and Seattle still maintain active fair-workweek and secure-scheduling enforcement pages, while vertical scheduling vendors continue publishing compliance explainers in 2026. That indicates the problem has not normalized into a solved feature.",
+    sources: [
+      src("other", 180, "https://www.nyc.gov/site/dca/workers/workersrights/fastfood-retail-workers.page", "NYC Fair Workweek protections for fast food workers", "Large cities still maintain active scheduling-rights enforcement and documentation requirements."),
+      src("other", 240, "https://www.glb.seattle.gov/laborstandards/ordinances/secure-scheduling", "Seattle secure scheduling ordinance", "Advance notice, premium pay, and access-to-hours requirements remain active obligations."),
+      src("blog", 100, "https://www.7shifts.com/blog/fair-workweek-law/", "7shifts overview of fair workweek law", "Scheduling vendors continue publishing compliance explainers because operators still need help implementing the rules."),
+    ],
+  },
+};
+
+const IDEAS_BY_THEME: Record<ThemeKey, SeedTuple[]> = {
+  accounting: [
+    ["smallTeam", "Client onboarding OS for solo bookkeepers", "Bookkeeping onboarding", "A client-intake workspace for one- and two-person bookkeeping firms that still chase statements, portal access, and kickoff tasks across email and spreadsheets."],
+    ["solo", "Tax organizer reminder autopilot for independent preparers", "Tax intake automation", "A reminder and status engine for independent tax preparers that automatically escalates missing documents before returns fall behind schedule."],
+    ["smallTeam", "White-label portal for neighborhood accounting firms", "Client portal", "A branded portal small accounting firms can hand to clients for uploads, status updates, and recurring requests without buying enterprise practice software."],
+    ["solo", "Practice migration assistant for spreadsheet-based firms", "Data migration", "A done-for-you migration and cleanup tool for small firms moving off shared drives and ad hoc spreadsheets into a repeatable workflow system."],
+    ["domainExpert", "Cash-application copilot for outsourced CFO shops", "Receivables operations", "A workflow assistant for outsourced finance teams reconciling payments, follow-ups, and close tasks across multiple small-business clients."],
+    ["smallTeam", "Recurring close tracker for fractional finance teams", "Monthly close ops", "A lightweight operating system for fractional controllers and outsourced close teams that need to run the same monthly sequence across dozens of clients."],
+  ],
+  industrialMro: [
+    ["smallTeam", "Obsolescence alert feed for PLC-heavy plants", "Lifecycle intelligence", "A watchlist that flags end-of-life notices, secondary-market inventory changes, and replacement-risk signals for plants running aging PLC and HMI fleets."],
+    ["smallTeam", "Compatibility ledger for legacy industrial boards", "Compatibility data", "A searchable compatibility ledger for legacy industrial boards and modules that records what worked, what failed, and what needed adaptation on real lines."],
+    ["venture", "Estate-sale sourcing network for industrial spares", "Supply aggregation", "A sourcing marketplace that turns plant closures, auctions, and estate sales into structured supply for obsolete industrial spare parts."],
+    ["domainExpert", "Return-grade verification service for surplus automation parts", "Quality assurance", "A verification workflow and certification layer for surplus automation parts so buyers can distinguish tested inventory from risky unknown stock."],
+    ["smallTeam", "Shutdown parts war-room for maintenance teams", "Shutdown coordination", "A centralized war-room for planned shutdowns that tracks critical parts, backup vendors, courier chains, and last-minute substitutions."],
+    ["solo", "BOM resurrection service for discontinued machine lines", "Bill-of-materials recovery", "A service-and-software hybrid that reconstructs missing bills of materials and replacement options for machine lines whose OEM support has disappeared."],
+  ],
+  syntheticData: [
+    ["smallTeam", "FHIR sandbox data builder", "FHIR test data", "A synthetic-data builder for health-tech teams that need realistic FHIR bundles, linked patients, and edge cases in staging without touching production PHI."],
+    ["smallTeam", "PCI-safe staging mirror for fintech apps", "Payments staging", "A staging-data layer that preserves transaction shapes and failure modes for fintech products without copying live PCI-sensitive records."],
+    ["domainExpert", "Synthetic claims dataset exchange for health software vendors", "Claims simulation", "A licensed synthetic dataset exchange for health-tech vendors that need repeatable claims and reimbursement scenarios for product and QA teams."],
+    ["smallTeam", "Schema drift detector for synthetic data pipelines", "Data pipeline QA", "A monitor that flags when schema or distribution drift makes previously generated synthetic datasets misleading or unusable for testing."],
+    ["smallTeam", "Synthetic-data fidelity evaluation harness", "Quality benchmarking", "A benchmarking harness that compares synthetic-data outputs for fidelity, privacy, and edge-case coverage before teams trust them in test pipelines."],
+    ["venture", "Vertical synthetic data warehouse for regulated AI teams", "Regulated AI infrastructure", "A managed warehouse of reusable synthetic datasets and generators tuned for healthcare, insurance, and financial AI product teams."],
+  ],
+  complianceReadiness: [
+    ["solo", "Security questionnaire answer base for early-stage SaaS teams", "Questionnaire workflows", "A structured answer bank that turns repeated enterprise security questionnaires into a reusable, reviewable knowledge base for lean startup teams."],
+    ["smallTeam", "Control-evidence calendar for lean compliance teams", "Evidence operations", "A recurring calendar and task system that tells small teams exactly which controls, screenshots, exports, and approvals they need to gather each week."],
+    ["solo", "Vendor policy pack generator for first enterprise deals", "Policy generation", "A productized workflow that assembles a startup’s first usable policy pack, security FAQ, and supporting trust documents for enterprise sales."],
+    ["smallTeam", "Audit-request portal for startups selling to banks", "Audit intake", "A secure portal for handling customer audit requests, follow-ups, and document exchange when startups start selling into regulated buyers."],
+    ["domainExpert", "SOC 2 to ISO 27001 gap mapper for growing SaaS companies", "Framework mapping", "A mapping workspace for companies graduating from SOC 2 into ISO 27001 and trying to reuse evidence instead of restarting compliance from scratch."],
+    ["smallTeam", "Continuous evidence collector for human-heavy controls", "Manual control automation", "A lightweight evidence collector for controls that still rely on screenshots, approvals, interviews, and recurring human sign-offs rather than APIs."],
+  ],
+  oncology: [
+    ["smallTeam", "Pathology slide logistics coordinator for remote second opinions", "Slide logistics", "A coordination layer that handles consent, slide shipment, image requests, and receipt tracking for cancer patients seeking remote second opinions."],
+    ["domainExpert", "Tumor board packet builder for community oncology clinics", "Tumor board prep", "A packet builder that assembles records, genomic highlights, imaging references, and treatment history for community oncology tumor boards."],
+    ["smallTeam", "Trial-screening intake for rare-presentation oncology patients", "Trial intake", "A patient-intake and eligibility workflow for oncology cases that require structured trial-screening beyond a generic clinicaltrials.gov search."],
+    ["smallTeam", "Genomics consent and record-chase concierge", "Consent and records", "A workflow service that obtains consents and chases pathology, imaging, and genomics files so precision-oncology opinions start with a complete packet."],
+    ["venture", "Employer-sponsored oncology navigation layer", "Employer benefits", "A navigation platform for self-insured employers that routes cancer patients into second opinions, genomic review, and trial discussions earlier in care."],
+    ["domainExpert", "Outcome-library tooling for subspecialty oncology networks", "Clinical outcomes knowledge", "A tooling layer for subspecialty oncology networks to maintain searchable outcomes libraries and case analogs for difficult treatment decisions."],
+  ],
+  counterUas: [
+    ["domainExpert", "Drone-incursion evidence room for utilities", "Incident evidence", "A secure evidence room for utilities to log detections, incidents, site photos, law-enforcement handoffs, and post-event reporting around drone incursions."],
+    ["smallTeam", "Site-readiness checklist platform for passive counter-UAS deployments", "Deployment readiness", "A checklist and commissioning workspace for facilities preparing to deploy passive detection or interception systems around critical sites."],
+    ["venture", "Shared monitoring network for industrial drone incursions", "Threat intelligence", "A shared monitoring and intelligence network that lets industrial operators compare incident patterns and correlate drone threats across sites."],
+    ["domainExpert", "Insurance underwriting pack for counter-UAS buyers", "Insurance workflows", "An underwriting and renewal pack that helps critical-infrastructure buyers document their counter-UAS posture for insurers and risk committees."],
+    ["smallTeam", "Operator-in-the-loop decision console for passive intercept systems", "Decision support", "A console that structures the approval, escalation, and incident timeline around passive intercept or response actions at critical facilities."],
+    ["venture", "Managed detection service for substations and storage terminals", "Managed security", "A managed service for utilities and fuel terminals that combines sensors, triage, and incident playbooks for persistent low-altitude drone threats."],
+  ],
+  agentInference: [
+    ["domainExpert", "Speculative decoding profiler for enterprise agent teams", "Inference profiling", "A profiler that shows exactly where agent workloads lose time and cost to speculative decoding, retries, and tool-call stalls."],
+    ["smallTeam", "Tool-call trace benchmark suite for inference vendors", "Benchmarking", "A benchmark suite built from real tool-calling traces so inference vendors can measure agent performance on something more realistic than chat prompts."],
+    ["venture", "Low-latency tool memory module for agent appliances", "Tool-state hardware", "A hardware-aware memory module that keeps tool state and branch context hot for regulated on-prem agent deployments."],
+    ["domainExpert", "Cost attribution layer for branchy agent workloads", "FinOps for agents", "A FinOps layer that assigns true cost to branching, tool retries, and long-context decisions in enterprise agent stacks."],
+    ["smallTeam", "Enterprise agent load replay harness", "Load testing", "A replay harness that reproduces real agent traces for load testing, regression testing, and infrastructure planning."],
+    ["venture", "On-prem agent inference box for regulated workloads", "Regulated deployment", "A bundled appliance for regulated teams that need predictable agent latency, local logs, and zero data egress for tool-heavy workflows."],
+  ],
+  agentOrchestration: [
+    ["smallTeam", "Agent identity and secrets broker for mid-market companies", "Identity and secrets", "A shared broker that manages credentials, token scope, and agent identities across internal automation stacks."],
+    ["smallTeam", "Cross-agent handoff audit log", "Handoff observability", "An audit log that records when one internal agent hands work, data, or authority to another so teams can reconstruct failures later."],
+    ["domainExpert", "Permission graph for internal agents touching finance and HR", "Permission governance", "A permission graph that shows which agents can touch finance, HR, and customer systems and where risky overlaps exist."],
+    ["smallTeam", "Fallback router for mixed-vendor internal agents", "Reliability routing", "A routing layer that decides when internal agents should retry, escalate, or fail over to a different model or workflow."],
+    ["venture", "Shared policy engine for agent fleets", "Policy orchestration", "A central policy engine that enforces approved tools, escalation rules, and data boundaries across an enterprise’s agent fleet."],
+    ["domainExpert", "Agent incident review workspace for compliance teams", "Incident review", "A workspace for compliance and ops teams to review agent incidents, attach evidence, and document corrective actions."],
+  ],
+  priorAuth: [
+    ["smallTeam", "Specialty-clinic denial-reason normalizer", "Denial analytics", "A normalization layer that converts inconsistent payer denial language into a shared taxonomy specialty clinics can actually route and act on."],
+    ["smallTeam", "Prior-auth appeal QA workspace", "Appeal workflows", "A pre-submission review workspace that catches missing evidence and weak packets before staff resubmit an appeal."],
+    ["smallTeam", "DME order completeness checker", "DME order QA", "An intake checker that flags missing signatures, medical-necessity documents, and form gaps before a DME order leaves the provider."],
+    ["smallTeam", "Home-health intake packet gap detector", "Referral completeness", "A referral-intake layer that scores incoming home-health packets for missing forms, missing signatures, and missing payer details."],
+    ["domainExpert", "Infusion auth-renewal tracker", "Recurring approvals", "A renewal tracker for infusion centers handling recurring biologics where expiring approvals quietly break schedules and revenue."],
+    ["domainExpert", "Payer API conformance test harness", "Payer integration QA", "A conformance harness that helps payers and vendors validate FHIR prior-auth behavior against realistic edge cases before production."],
+  ],
+  accessibility: [
+    ["solo", "EU accessibility evidence packs for Shopify merchants", "Merchant accessibility packs", "A fixed-scope evidence and remediation pack for merchants selling into Europe who need a credible accessibility story without a full internal team."],
+    ["solo", "VPAT sprint for B2B SaaS companies", "VPAT delivery", "A fast-turn VPAT preparation workflow for B2B SaaS companies trying to survive procurement reviews and accessibility questionnaires."],
+    ["solo", "Accessible PDF remediation for insurers and lenders", "Document accessibility", "A remediation service and workflow system for insurers and lenders whose recurring disclosures and statements still fail accessibility requirements."],
+    ["smallTeam", "EAA regression monitor for B2B SaaS release teams", "Release QA", "A regression monitor that watches product releases for accessibility slips and turns them into engineering tickets with proof attached."],
+    ["smallTeam", "Accessible-document QA API", "Document QA API", "An API that evaluates generated PDFs and customer notices for machine-readable accessibility issues before they are sent downstream."],
+    ["domainExpert", "Municipal digital-accessibility procurement checker", "Procurement review", "A procurement-review workflow for municipalities and public contractors buying software, kiosks, and document-heavy services under accessibility obligations."],
+  ],
+  refrigerantTransition: [
+    ["solo", "A2L retrofit photo-audit service for HVAC shops", "Install documentation", "A photo-audit and checklist workflow for HVAC shops that need better documentation and post-install evidence as A2L equipment rolls out."],
+    ["solo", "Refrigerant-log backfill service for commercial HVAC contractors", "Record cleanup", "A backfill service that cleans up historical refrigerant logs and asset histories before contractors move into stricter transition-era documentation."],
+    ["smallTeam", "A2L parts-compatibility checker for HVAC distributors", "Counter sales tooling", "A compatibility checker that helps distributor counter teams confirm refrigerant class, component fit, and install caveats in real time."],
+    ["smallTeam", "Property-manager refrigerant transition reserve planner", "Capital planning", "A planning tool for multi-site property owners trying to prioritize which assets are most exposed to the refrigerant transition."],
+    ["domainExpert", "Grocery cold-chain refrigerant conversion PM tool", "Portfolio retrofit management", "A program-management tool for regional grocery operators sequencing refrigerant conversions across dozens of stores."],
+    ["venture", "Refrigerant recovery and resale exchange for retrofit contractors", "Recovery marketplace", "An exchange that tracks recovery, testing, and resale of refrigerant pulled from retrofit projects rather than leaving it as waste or chaos."],
+  ],
+  leadLine: [
+    ["solo", "Lead-line homeowner outreach concierge for engineering firms", "Resident outreach", "A resident outreach and paperwork workflow for engineering firms running municipal lead-line replacement programs."],
+    ["solo", "Water-utility public inventory publishing service", "Public inventory UX", "A public-facing publishing layer that turns ugly utility spreadsheets into resident-friendly lead-line inventories and notice pages."],
+    ["smallTeam", "Lead-line private-side scheduling portal", "Scheduling", "A scheduling portal that coordinates homeowners, plumbers, utility crews, and inspectors around one lead-line replacement event."],
+    ["smallTeam", "Replacement-contractor capacity board for municipal lead programs", "Capacity management", "A contractor-capacity board that shows which approved replacement crews still have room and where programs are stalled."],
+    ["domainExpert", "Multi-site lead-replacement equity planner", "Program prioritization", "A planning tool for cities trying to prioritize replacements by risk, readiness, and response rates instead of pipe age alone."],
+    ["venture", "Lead-line financing marketplace with municipal escrow", "Financing workflows", "A financing and escrow layer that connects residents, contractors, and municipal programs on the private-side replacement problem."],
+  ],
+  dairyBiosecurity: [
+    ["solo", "Dairy biosecurity SOP builder for regional vet groups", "Biosecurity procedures", "A standardized SOP builder for veterinary groups and dairy networks trying to operationalize H5N1-era biosecurity practices across farms."],
+    ["solo", "Milk-sample chain-of-custody setup for processors", "Sample handling", "A forms-and-operations workflow for processors that need cleaner chain-of-custody around milk testing and exception handling."],
+    ["smallTeam", "Dairy visitor and vehicle biosecurity log app", "Farm logging", "A mobile-first logbook for farms to record visitors, vehicles, and sanitation checks in a way that survives audits and outbreaks."],
+    ["smallTeam", "Bulk-milk pickup exception tracker", "Pickup exceptions", "An operations tool that tracks missed pickups, positive-sample escalations, and chain-of-custody breaks for regional dairy operators."],
+    ["domainExpert", "Dairy interstate-movement testing scheduler", "Movement compliance", "A scheduler that coordinates the recurring testing and documentation needed when dairy cattle move across state lines."],
+    ["domainExpert", "Dairy processor positive-sample escalation dashboard", "Escalation management", "A dashboard for processors and regulators to coordinate the downstream actions that follow positive milk or herd signals."],
+  ],
+  apprenticeship: [
+    ["solo", "Registered Apprenticeship sponsor application service for school districts", "Sponsor launch", "A done-for-you sponsor application workflow for school districts entering apprenticeship structures for the first time."],
+    ["solo", "Apprenticeship launch kit for small manufacturers", "Employer launch", "A launch kit for manufacturers who want apprenticeship programs but do not want to navigate sponsor paperwork from scratch."],
+    ["smallTeam", "Apprenticeship supervisor text check-in app", "Field supervision", "A text-first check-in tool that helps supervisors confirm OJT progress and milestones without logging into a portal every day."],
+    ["smallTeam", "OJT hour anomaly detector", "Hours QA", "A detector that flags missing, suspicious, or inconsistent on-the-job training hour logs before reporting deadlines arrive."],
+    ["domainExpert", "Apprenticeship completion-risk dashboard", "Retention analytics", "A dashboard for intermediaries and sponsors to see which cohorts, employers, or programs are drifting toward non-completion."],
+    ["domainExpert", "K-12 apprenticeship intermediary OS", "Intermediary operations", "A lightweight operating system for K-12 apprenticeship intermediaries managing employers, placements, paperwork, and compliance proof."],
+  ],
+  foodTraceability: [
+    ["solo", "Food-traceability record-mapping sprint for berry, greens, and cheese brands", "Traceability mapping", "A productized sprint that maps how a traceability-covered brand currently stores key data elements and where its retrieval gaps still are."],
+    ["solo", "Supplier document chase desk for food hubs", "Supplier coordination", "An outsourced workflow desk that keeps supplier certifications, lot-code rules, and key traceability contacts current."],
+    ["smallTeam", "Food-traceability 24-hour retrieval layer", "Record retrieval", "A retrieval layer that assembles the right lot, supplier, and receiving records within the 24-hour response window buyers fear most."],
+    ["smallTeam", "Supplier onboarding CRM for traceability-covered brands", "Supplier onboarding", "A CRM built around collecting traceability contacts, lot-code formats, and readiness status across fragmented supplier networks."],
+    ["domainExpert", "Recall drill simulator for mid-market food brands", "Recall readiness", "A simulator that runs traceability and recall drills so brands can see where their record, contact, and lot-link failures still exist."],
+    ["domainExpert", "Produce grower lot-code translation layer", "Code normalization", "A translation layer that normalizes lot-code conventions across growers, packers, and buyers during traceability events."],
+  ],
+  droneCompliance: [
+    ["solo", "Part 107 waiver packet service for inspection firms", "Waiver preparation", "A waiver packet service for drone inspection firms that need repeatable documentation for operations outside basic Part 107 limits."],
+    ["solo", "Drone compliance back office for utility vegetation contractors", "Compliance admin", "A recurring admin workflow for utility vegetation contractors managing aircraft records, pilots, waivers, and policy documentation."],
+    ["smallTeam", "Remote ID registry for local drone-service fleets", "Remote ID operations", "A registry and renewal tool for small commercial fleets that need to track aircraft, modules, and Remote ID compliance status."],
+    ["smallTeam", "Drone waiver evidence locker", "Evidence management", "A locker that stores approvals, maps, mitigation plans, and prior mission evidence so operators can reuse strong submissions."],
+    ["domainExpert", "Agricultural spray compliance logbook", "Ag operations compliance", "A logbook tuned for operators balancing drone rules, chemical records, and state or crop-specific requirements."],
+    ["domainExpert", "Utility drone storm-response workpack generator", "Storm response", "A generator for pre-approved mission packets, assignments, and evidence sets used by utilities and contractors during storm response."],
+  ],
+  gridInterconnection: [
+    ["domainExpert", "Data-center interconnection document room", "Interconnection documentation", "A controlled document room for developers managing utility studies, queue paperwork, land, and power-delivery negotiations."],
+    ["domainExpert", "Generator co-location diligence tracker for large-load developers", "Co-location diligence", "A tracker for the technical, tariff, and counterparty diligence around co-locating large loads with generation assets."],
+    ["venture", "Brownfield data-center site aggregator with utility-readiness data", "Site aggregation", "A data product that packages substations, land status, water, and local utility-readiness signals for AI and inference site selection."],
+    ["venture", "Behind-the-meter flexibility platform for secondary data centers", "Load flexibility", "A platform that helps smaller data-center operators use flexible load, backup generation, and market participation to lower grid dependence."],
+    ["domainExpert", "Demand-response enrollment ops for C&I aggregators", "Enrollment operations", "An operating system for commercial aggregators that need to move sites through meter, contract, and readiness steps faster."],
+    ["venture", "Large-load interconnection brokerage for industrial parks", "Brokerage", "A brokerage layer that helps industrial parks package load flexibility, generation, and queue strategy for power-hungry tenants."],
+  ],
+  freightTransparency: [
+    ["solo", "Freight detention and TONU evidence assembly for small carriers", "Dispute evidence", "An evidence-assembly workflow that helps small carriers prove detention, TONU, and accessorial claims with cleaner documentation."],
+    ["solo", "Broker-transparency request prep for small fleets", "Transparency requests", "A workflow that prepares and tracks broker transaction-record requests for fleets that lack a dedicated back office."],
+    ["smallTeam", "Carrier onboarding reuse vault across freight brokers", "Onboarding reuse", "A reuse vault that lets carriers maintain one verified packet and push it to multiple brokers instead of rekeying the same data."],
+    ["smallTeam", "Load-exception inbox for small importers", "Exception management", "A unified inbox for small importers handling ETA changes, customs holds, appointment shifts, and last-mile exceptions."],
+    ["smallTeam", "Last-mile freight visibility for small importers", "Visibility", "A visibility layer for importers shipping too little to buy enterprise freight software but too much to manage from phone calls and spreadsheets."],
+    ["domainExpert", "Margin and dispute analytics for owner-operator fleets", "Margin analytics", "A dashboard that ties broker opacity, accessorial disputes, and load-level margin erosion together for owner-operator fleets."],
+  ],
+  constructionSafety: [
+    ["solo", "OSHA inspection document vault setup for specialty subcontractors", "Inspection readiness", "A document vault and operating checklist for specialty subcontractors that need their inspection materials organized before OSHA arrives."],
+    ["solo", "Subcontractor training-proof concierge for mid-size GCs", "Training proof collection", "A concierge workflow that collects, verifies, and maintains training proof from the long tail of subs on a general contractor’s jobs."],
+    ["smallTeam", "Walkaround inspection prep app for small GCs", "Walkaround prep", "An app that centralizes contacts, checklists, site maps, and representative designations for general contractors on inspection day."],
+    ["smallTeam", "Near-miss voice-note triage for field crews", "Incident capture", "A voice-to-workflow tool that turns rough field notes into categorized near misses and follow-up tasks."],
+    ["smallTeam", "Subcontractor credential wallet for construction subs", "Credential sharing", "A reusable credential wallet that small subs can send from job to job for insurance, training, and compliance proof."],
+    ["domainExpert", "Construction-insurer underwriting data pack for specialty trades", "Insurance underwriting", "A data pack that helps specialty trade contractors present cleaner safety, workforce, and near-miss data during underwriting and renewal."],
+  ],
+  shiftWork: [
+    ["venture", "Multi-app schedule control for hourly workers", "Worker scheduling", "A worker-side scheduling app that unifies shifts, swaps, and availability across the multiple employer apps hourly workers already juggle."],
+    ["smallTeam", "Shift-premium calculator for fair-workweek chains", "Premium-pay compliance", "A calculator and audit trail for multi-location chains that owe premium pay when managers edit schedules too late."],
+    ["smallTeam", "Access-to-hours board for fast-food operators", "Hours allocation", "A board that helps operators offer new hours to current workers first and keep proof that they followed the rule."],
+    ["smallTeam", "Clopening risk monitor for franchise groups", "Clopening compliance", "A monitor that flags risky close-open combinations and missing consent before schedules are posted."],
+    ["smallTeam", "Worker-side schedule wallet across multiple employers", "Worker tooling", "A schedule wallet that gives hourly workers one place to track commitments, availability, and shift conflicts across multiple jobs."],
+    ["domainExpert", "Fair-workweek evidence vault for large restaurant operators", "Employer evidence", "An evidence vault that stores notices, schedule versions, consent records, and premium-pay proof for restaurant operators under fair-workweek rules."],
+  ],
+};
+
+function slugify(title: string) {
+  return title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")
+    .slice(0, 80);
 }
 
-function modelTypeFor(seed: ResearchIdeaSeed, stage: ResearchStage): Opportunity["model_type"] {
-  const text = `${seed.title} ${seed.summary}`.toLowerCase();
-
-  if (includesAny(text, ["api", "sandbox", "harness"])) return "API / Usage-Based";
-  if (includesAny(text, ["marketplace", "exchange", "network", "aggregator", "brokerage"])) return "Marketplace";
-  if (includesAny(text, ["financing", "working-capital", "underwriting"])) return "Transactional";
-  if (stage === "solo") return "Productized Service";
-  if (stage === "venture" && includesAny(text, ["flexibility platform", "cold-storage", "recovery and resale", "lead-line financing"])) {
-    return "Hardware + Software";
-  }
-  return STAGE_DEFAULTS[stage].model_type;
+function gapFor(summary: string) {
+  return `${summary} Today the workflow usually lives in spreadsheets, shared drives, inboxes, and tribal knowledge rather than purpose-built software. That creates missed deadlines, weak audit trails, and manual follow-up work that is expensive enough for a narrow founder wedge to matter.`;
 }
 
-function buildStackFor(stage: ResearchStage, modelType: Opportunity["model_type"]): Opportunity["build_stack_hint"] {
-  if (modelType === "Productized Service") return "No-code";
-  if (modelType === "API / Usage-Based") return "Traditional engineering";
-  return STAGE_DEFAULTS[stage].build_stack_hint;
-}
+function playFor(stage: ResearchStage, modelType: Opportunity["model_type"]) {
+  const packaging =
+    modelType === "Productized Service"
+      ? "Package the work first as a repeatable service with a clear deliverable and only productize the steps that repeat every week."
+      : modelType === "API / Usage-Based"
+        ? "Make the first wedge a small, opinionated API or developer workflow that plugs into an existing system instead of trying to replace it."
+        : modelType === "Marketplace"
+          ? "Win on supply or trust first, then turn the repeating transaction into software rather than starting with an empty marketplace."
+          : "Own the narrow evidence, queue, or coordination layer where existing systems are weakest instead of pretending to be a full suite on day one.";
 
-function difficultyFor(seed: ResearchIdeaSeed, stage: ResearchStage): Opportunity["difficulty"] {
-  const text = `${seed.title} ${seed.summary}`.toLowerCase();
+  const launch =
+    stage === "venture"
+      ? "The initial product should prove one high-value deployment or contract path before broadening into a platform."
+      : "The product should land with design partners quickly and expand only after the first workflow is used every week.";
 
-  if (stage === "venture") return includesAny(text, ["interconnection", "flexibility", "financing", "mutual", "cold-storage"]) ? "Expert" : "Hard";
-  if (stage === "domainExpert" && includesAny(text, ["payer api", "oncology", "lead-replacement", "utility", "transit", "government"])) return "Hard";
-  if (stage === "smallTeam" && includesAny(text, ["payer", "utility", "water system", "regional health plans"])) return "Hard";
-  if (stage === "solo" && includesAny(text, ["microcap", "public companies", "municipalities", "dairy"])) return "Medium";
-  return STAGE_DEFAULTS[stage].difficulty;
-}
-
-function startingCapitalFor(seed: ResearchIdeaSeed, stage: ResearchStage): Opportunity["starting_capital"] {
-  const text = `${seed.title} ${seed.summary}`.toLowerCase();
-
-  if (stage === "venture") return "$100k+";
-  if (stage === "domainExpert") return includesAny(text, ["utility", "data-center", "interconnection"]) ? "$10k-$100k" : "$1k-$10k";
-  if (stage === "smallTeam" && includesAny(text, ["regional health plans", "utility", "water systems"])) return "$10k-$100k";
-  if (stage === "solo" && includesAny(text, ["public companies", "municipalities"])) return "$1k-$10k";
-  return STAGE_DEFAULTS[stage].starting_capital;
-}
-
-function revenueCeilingFor(seed: ResearchIdeaSeed, stage: ResearchStage): Opportunity["revenue_ceiling"] {
-  const text = `${seed.title} ${seed.summary}`.toLowerCase();
-
-  if (stage === "venture") return "Venture ($10M+ ARR)";
-  if (stage === "domainExpert" && includesAny(text, ["benchmark exchange", "conformance", "interconnection", "transit"])) return "Venture ($10M+ ARR)";
-  return STAGE_DEFAULTS[stage].revenue_ceiling;
-}
-
-function audienceFor(seed: ResearchIdeaSeed, classification: Classification): Opportunity["audience"] {
-  const text = `${seed.title} ${seed.summary}`.toLowerCase();
-  if (includesAny(text, ["homeowner", "resident", "tenant", "landlords", "students"])) return "B2B2C";
-  return classification.audience;
-}
-
-function firstClause(summary: string) {
-  return summary.split(";")[0].trim().replace(/\.$/, "");
-}
-
-function secondClause(summary: string) {
-  const parts = summary.split(";");
-  return (parts[1] ?? "").trim().replace(/\.$/, "");
-}
-
-function oneLinerFor(seed: ResearchIdeaSeed) {
-  const sentence = firstClause(seed.summary);
-  return sentence.endsWith(".") ? sentence : `${sentence}.`;
-}
-
-function gapFor(seed: ResearchIdeaSeed) {
-  const sentence = firstClause(seed.summary);
-  return `${sentence}. Right now the buyer usually patches this workflow together with email, spreadsheets, shared drives, and software designed for much larger operators. That leaves a narrow but painful wedge under-owned even though the need is obvious to the people doing the work.`;
-}
-
-function playFor(seed: ResearchIdeaSeed, modelType: Opportunity["model_type"]) {
-  const wedge = secondClause(seed.summary);
-  const wedgeLine = wedge
-    ? `${wedge.charAt(0).toUpperCase()}${wedge.slice(1)}.`
-    : "Package the narrow operating layer around this workflow instead of trying to become a full suite on day one.";
-  return `${wedgeLine} Sell a focused ${modelType.toLowerCase()} around one buyer, one trigger event, and one repeatable proof point so the product wins on clarity rather than scope.`;
-}
-
-function marketFor(industry: Classification["industry"], stage: ResearchStage) {
-  if (industry === "Healthcare & Med-Adjacent") {
-    return "The buyer set is finite but valuable: independent clinics, specialty groups, regional plans, and health-tech vendors feel this pain weekly and can justify meaningful spend to remove revenue delays or admin labor. A wedge that lands a few hundred accounts at mid-four-figure to low-five-figure ACVs becomes a real $1M-$10M business.";
-  }
-  if (industry === "Accessibility & Compliance") {
-    return "This market is driven by compliance and procurement rather than discretionary tooling budgets. Thousands of software vendors, agencies, banks, and document-heavy operators need point solutions here, so a few hundred customers can support a durable niche business.";
-  }
-  if (industry === "Water & Utilities") {
-    return "There are fewer buyers, but budgets are real and deadline-driven. Winning dozens to a few hundred utilities, engineering firms, or municipal programs at meaningful ACVs is enough to build a serious company in this niche.";
-  }
-  if (industry === "Energy & Grid Infrastructure") {
-    return "The buyer count is smaller, but project values are high and timing matters. Even dozens of customers can support a venture-scale business if the product becomes part of site selection, interconnection, or dispatch operations.";
-  }
-  if (industry === "Food & Agriculture") {
-    return "The buyer universe spans processors, brands, growers, and regional operators with recurring compliance and operations pain. A focused product can support $1M-$10M ARR long before it needs broad enterprise scale.";
-  }
-  if (industry === "Industrial & Drone Ops") {
-    return "Commercial operators, contractors, and utilities buy slowly but value auditability and reuse. A focused workflow product can expand from compliance into the system of record for missions, crews, and assets once the first wedge sticks.";
-  }
-  if (industry === "Logistics & Supply Chain") {
-    return "The buyer pool is fragmented and operationally stressed, which is exactly why broad platforms miss the wedge. Small carriers, brokers, and importers will pay to reduce one painful exception path if the ROI is visible inside a week.";
-  }
-  if (industry === "Construction & Skilled Trades") {
-    return "This market is fragmented and local, which is why broad software vendors under-serve it. If a product reaches a few hundred contractors, districts, or facilities teams at modest ACVs, it compounds into a durable niche business.";
-  }
-  if (industry === "Cybersecurity") {
-    return "Public-company and incident-response workflows carry outsized willingness to pay because failure is expensive and visible. A few hundred customers at five-figure ACVs is already a strong business.";
-  }
-  if (stage === "venture") {
-    return "The buyer count is not huge, but the budget and operational leverage per deployment are. If this becomes the default workflow layer in one regulated niche, the revenue ceiling moves well past the first $10M ARR.";
-  }
-  return "The buyer universe here is narrower than a generic horizontal SaaS market, but that is part of the wedge. A few hundred customers paying for a clearly recurring problem is enough to build a meaningful business before the category gets crowded.";
+  return `${packaging} ${launch}`;
 }
 
 function buildPathFor(stage: ResearchStage) {
   if (stage === "solo") {
-    return "Start as a service, not a software company. Pick one buyer type and one deliverable inside this wedge, sell 5-10 engagements manually, and template the work until the handoffs repeat. Only then productize the recurring checklist, portal, or evidence layer.";
+    return "Start with one buyer profile and one deliverable. Sell 5 paid engagements manually, turn the recurring checklist into a lightweight portal or dashboard, and use that artifact to decide what deserves software. Ignore adjacent modules until the first service is repeatable without heroics.";
   }
   if (stage === "smallTeam") {
-    return "Start with one workflow, one source system boundary, and one narrow ICP. Land 3-5 design partners, do ugly edge cases manually in the back end, and automate only the recurring path. Avoid adjacent modules until the first wedge is used weekly.";
+    return "Land 3-5 design partners with the narrowest version of the workflow. Handle edge cases manually behind the scenes, automate only the repeated path, and ship exports or proofs buyers can immediately use. Do not broaden into a full suite until the core job is used weekly.";
   }
   if (stage === "domainExpert") {
-    return "Start with two or three design partners and one regulated use case. Build only the minimum workflow, reporting, and audit trail needed to survive a real pilot. Expect implementation work at first, then use that to learn which steps deserve product.";
+    return "Start with two or three domain-expert design partners and one operational surface that carries real compliance or financial pain. Expect some implementation work, but convert every repeated step into product quickly. The first milestone is a workflow teams trust in a live environment.";
   }
-  return "Prove the coordination wedge before attempting the full platform. Secure one anchor partner, one geography or asset type, and one repeatable transaction path, then build the operating software around live projects. Do not broaden before the first deployment shows real throughput or margin.";
+  return "Secure one anchor buyer, one deployment path, and one measurable proof point before building breadth. The first release should make a single high-value workflow materially faster, safer, or more auditable. Use that deployment to earn the right to expand into adjacent modules.";
 }
 
-export const RESEARCH_OPPORTUNITIES: Opportunity[] = RESEARCH_IDEA_SEEDS.map((seed, index) => {
-  const classification = classifyIdea(seed);
-  const model_type = modelTypeFor(seed, seed.stage);
+function oneLiner(summary: string) {
+  return summary.endsWith(".") ? summary : `${summary}.`;
+}
+
+const RESEARCH_IDEAS: IdeaSeed[] = Object.entries(IDEAS_BY_THEME).flatMap(([theme, tuples]) =>
+  tuples.map(([stage, title, niche, summary, model_type]) => ({
+    theme: theme as ThemeKey,
+    stage,
+    title,
+    niche,
+    summary,
+    model_type,
+  })),
+);
+
+export const RESEARCH_OPPORTUNITIES: Opportunity[] = RESEARCH_IDEAS.map((idea, index) => {
+  const theme = THEMES[idea.theme];
+  const stage = STAGE_DEFAULTS[idea.stage];
+  const model_type = idea.model_type ?? theme.model_type ?? stage.model_type;
 
   return {
-    id: seed.slug,
-    slug: seed.slug,
-    title: seed.title,
-    one_liner: oneLinerFor(seed),
-    the_gap: gapFor(seed),
-    the_play: playFor(seed, model_type),
-    market_size_summary: marketFor(classification.industry, seed.stage),
-    timing_rationale: classification.timing_rationale,
-    build_path: buildPathFor(seed.stage),
+    id: slugify(idea.title),
+    slug: slugify(idea.title),
+    title: idea.title,
+    one_liner: oneLiner(idea.summary),
+    the_gap: gapFor(idea.summary),
+    the_play: playFor(idea.stage, model_type),
+    market_size_summary: theme.market_size_summary,
+    timing_rationale: theme.timing_rationale,
+    build_path: buildPathFor(idea.stage),
     model_type,
-    audience: audienceFor(seed, classification),
-    industry: classification.industry,
-    niche: classification.niche,
-    revenue_ceiling: revenueCeilingFor(seed, seed.stage),
-    founder_path: STAGE_DEFAULTS[seed.stage].founder_path,
-    difficulty: difficultyFor(seed, seed.stage),
-    starting_capital: startingCapitalFor(seed, seed.stage),
-    time_to_launch: STAGE_DEFAULTS[seed.stage].time_to_launch,
-    build_stack_hint: buildStackFor(seed.stage, model_type),
-    moat: classification.moat,
-    distribution_play: classification.distribution_play,
-    demand_trend: classification.demand_trend,
+    audience: idea.audience ?? theme.audience,
+    industry: theme.industry,
+    niche: idea.niche,
+    revenue_ceiling: idea.revenue_ceiling ?? theme.revenue_ceiling ?? stage.revenue_ceiling,
+    founder_path: stage.founder_path,
+    difficulty: stage.difficulty,
+    starting_capital: stage.starting_capital,
+    time_to_launch: stage.time_to_launch,
+    build_stack_hint: model_type === "Productized Service"
+      ? "No-code"
+      : model_type === "API / Usage-Based"
+        ? "Traditional engineering"
+        : stage.build_stack_hint,
+    moat: idea.moat ?? theme.moat,
+    distribution_play: idea.distribution_play ?? theme.distribution_play,
+    demand_trend: idea.demand_trend ?? theme.demand_trend,
     featured: false,
     rank: BASE_RANK + index,
     cover_image_url: null,
     yc_rfs_slug: null,
-    sources: [],
+    sources: theme.sources,
     created_at: BASE_DATE,
     updated_at: BASE_DATE,
   };

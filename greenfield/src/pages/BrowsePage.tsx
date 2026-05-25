@@ -6,6 +6,7 @@ import OpportunityRow from "@/components/opportunities/OpportunityRow";
 import FilterChip from "@/components/opportunities/FilterChip";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { publishedOpportunitiesFromRows } from "@/lib/catalogue";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { SAMPLE_OPPORTUNITIES } from "@/lib/fixtures";
 import { VOCAB } from "@/lib/vocab";
@@ -24,7 +25,7 @@ export default function BrowsePage() {
         .order("featured", { ascending: false })
         .order("rank", { ascending: true });
       if (error) throw error;
-      return data as Opportunity[];
+      return publishedOpportunitiesFromRows(data as Opportunity[]);
     },
   });
 

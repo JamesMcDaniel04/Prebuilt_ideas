@@ -1,6 +1,6 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
-  Bookmark, Bot, Compass, LayoutGrid, LogOut, Mail, Rocket, ShieldCheck, Sparkles, User, Workflow,
+  Bookmark, Bot, Code2, Compass, LayoutGrid, LogOut, Mail, Rocket, ShieldCheck, Sparkles, User, Workflow,
 } from "lucide-react";
 
 import { cn } from "@/lib/utils";
@@ -24,6 +24,7 @@ export default function Sidebar() {
       <nav className="flex-1 space-y-0.5 px-3">
         <Section label="Catalogue">
           <Item to="/browse" icon={<Compass className="h-4 w-4" />}>Browse</Item>
+          <Item to="/practice" icon={<Code2 className="h-4 w-4" />}>Practice</Item>
           <Item to="/saved" icon={<Bookmark className="h-4 w-4" />}>Saved</Item>
         </Section>
 
@@ -157,6 +158,9 @@ export function MobileTopBar() {
         <span className="font-display text-lg">Greenfield</span>
       </Link>
       <div className="flex items-center gap-2">
+        <Button variant="ghost" size="sm" asChild>
+          <Link to="/practice" aria-label="Practice"><Code2 className="h-4 w-4" /></Link>
+        </Button>
         <Button variant="ghost" size="sm" asChild>
           <Link to="/saved" aria-label="Saved"><Bookmark className="h-4 w-4" /></Link>
         </Button>

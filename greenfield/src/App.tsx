@@ -4,6 +4,7 @@ import Layout from "@/components/layout/Layout";
 import MarketingLayout from "@/components/layout/MarketingLayout";
 import LandingPage from "@/pages/LandingPage";
 import BrowsePage from "@/pages/BrowsePage";
+import PracticeIdeasPage from "@/pages/PracticeIdeasPage";
 import OpportunityDetailPage from "@/pages/OpportunityDetailPage";
 import SavedPage from "@/pages/SavedPage";
 import AuthPage from "@/pages/AuthPage";
@@ -27,6 +28,7 @@ export default function App() {
       {/* App shell — sidebar + main. */}
       <Route element={<Layout />}>
         <Route path="/browse" element={<BrowsePage />} />
+        <Route path="/practice" element={<PracticeIdeasPage />} />
         <Route path="/opportunity/:slug" element={<OpportunityDetailPage />} />
         <Route path="/saved" element={<SavedPage />} />
         <Route path="/agents" element={<AgentsPage />} />

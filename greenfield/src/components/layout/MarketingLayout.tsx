@@ -25,6 +25,7 @@ export default function MarketingLayout() {
 
           <nav className="hidden md:flex items-center gap-1">
             <TopLink to="/browse">Browse</TopLink>
+            <TopLink to="/practice">Practice</TopLink>
             <TopLink to="/yc-requests">YC Requests</TopLink>
             <TopLink to="/pricing">Pricing</TopLink>
           </nav>
@@ -67,12 +68,13 @@ export default function MarketingLayout() {
               <span className="font-display text-lg tracking-tight">Greenfield</span>
             </Link>
             <p className="mt-3 max-w-xs text-muted-foreground">
-              A curated catalogue of unbuilt startup opportunities, each with a build brief that ships to your coding agent.
+              A curated catalogue of startup opportunities and AI-friendly practice builds, each with a brief you can ship with your coding agent.
             </p>
           </div>
 
           <FooterCol title="Product">
             <FooterLink to="/browse">Catalogue</FooterLink>
+            <FooterLink to="/practice">Practice</FooterLink>
             <FooterLink to="/yc-requests">YC Requests</FooterLink>
             <FooterLink to="/pricing">Pricing</FooterLink>
           </FooterCol>

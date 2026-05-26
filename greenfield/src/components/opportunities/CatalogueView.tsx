@@ -49,7 +49,11 @@ export default function CatalogueView({
     filters.modelTypes.length + filters.capitals.length + filters.times.length + filters.stacks.length +
     additionalFilterCount(filters);
 
-  const singularLabel = itemLabel.endsWith("s") ? itemLabel.slice(0, -1) : itemLabel;
+  const singularLabel = itemLabel.endsWith("ies")
+    ? `${itemLabel.slice(0, -3)}y`
+    : itemLabel.endsWith("s")
+      ? itemLabel.slice(0, -1)
+      : itemLabel;
 
   return (
     <>

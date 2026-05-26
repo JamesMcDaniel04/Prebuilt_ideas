@@ -20,7 +20,7 @@ export default function OpportunityCard({ opp }: { opp: Opportunity }) {
         "hover:border-primary/40 hover:shadow-md hover:-translate-y-0.5",
       )}
     >
-      <div className="h-28">
+      <div className="h-32">
         <OpportunityThumbnail opp={opp} />
       </div>
 

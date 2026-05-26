@@ -6,6 +6,7 @@ import { publishedOpportunitiesFromRows } from "@/lib/catalogue";
 import { useClaimedIdeas } from "@/lib/claims";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { SAMPLE_OPPORTUNITIES } from "@/lib/fixtures";
+import { PRACTICE_OPPORTUNITY_SLUGS } from "@/lib/researchedIdeas";
 import type { Opportunity } from "@/lib/types";
 
 export default function BrowsePage() {
@@ -14,7 +15,9 @@ export default function BrowsePage() {
   const { data: opps = [], isLoading } = useQuery({
     queryKey: ["opportunities", isSupabaseConfigured],
     queryFn: async () => {
-      if (!isSupabaseConfigured) return SAMPLE_OPPORTUNITIES;
+      if (!isSupabaseConfigured) {
+        return SAMPLE_OPPORTUNITIES.filter((opp) => !PRACTICE_OPPORTUNITY_SLUGS.has(opp.slug));
+      }
       // visible_opportunities view filters out actively-claimed-by-others rows
       // at the DB layer (security_invoker means RLS still applies per user).
       const { data, error } = await supabase
@@ -23,7 +26,7 @@ export default function BrowsePage() {
         .order("featured", { ascending: false })
         .order("rank", { ascending: true });
       if (error) throw error;
-      return publishedOpportunitiesFromRows(data as Opportunity[]);
+      return publishedOpportunitiesFromRows(data as Opportunity[]).filter((opp) => !PRACTICE_OPPORTUNITY_SLUGS.has(opp.slug));
     },
   });
 

@@ -5,14 +5,17 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import OpportunityRow from "@/components/opportunities/OpportunityRow";
 import { SAMPLE_OPPORTUNITIES } from "@/lib/fixtures";
+import { PRACTICE_OPPORTUNITY_SLUGS } from "@/lib/researchedIdeas";
 import { SELF_SERVE_TIERS, TIER_BY_PLAN, type PricingTier } from "@/lib/pricing";
 
 const PREVIEW_COUNT = 10;
 
 export default function LandingPage() {
-  const totalCount = SAMPLE_OPPORTUNITIES.length;
+  const founderOpportunities = SAMPLE_OPPORTUNITIES.filter((opp) => !PRACTICE_OPPORTUNITY_SLUGS.has(opp.slug));
+  const practiceCount = SAMPLE_OPPORTUNITIES.filter((opp) => PRACTICE_OPPORTUNITY_SLUGS.has(opp.slug)).length;
+  const totalCount = founderOpportunities.length;
   const previewCount = Math.min(PREVIEW_COUNT, totalCount);
-  const featured = [...SAMPLE_OPPORTUNITIES]
+  const featured = [...founderOpportunities]
     .sort((a, b) => Number(b.featured) - Number(a.featured) || a.rank - b.rank)
     .slice(0, previewCount);
   const lockedCount = Math.max(0, totalCount - previewCount);
@@ -24,13 +27,13 @@ export default function LandingPage() {
         <div className="container-wide py-20 md:py-28 text-center">
           <p className="mb-4 inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/[0.06] px-3 py-1 text-xs font-medium text-primary">
             <Sparkles className="h-3 w-3" />
-            {SAMPLE_OPPORTUNITIES.length} opportunities live · {SAMPLE_OPPORTUNITIES.filter(o => o.yc_rfs_slug).length} seeded by YC RFS
+            {founderOpportunities.length} founder opportunities live · {practiceCount} practice builds
           </p>
           <h1 className="mx-auto max-w-3xl font-display text-4xl md:text-6xl leading-[1.05]">
             Find your next startup. Skip the blank page.
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-muted-foreground">
-            Greenfield is a curated catalogue of unbuilt startup opportunities — each with a Markdown build brief that drops straight into Claude Code, Cursor, or Codex. Pick one and ship.
+            Greenfield is a curated catalogue of unbuilt startup opportunities, plus a separate practice library for sharpening your AI shipping skills. Each brief drops straight into Claude Code, Cursor, or Codex.
           </p>
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <Button size="lg" asChild>

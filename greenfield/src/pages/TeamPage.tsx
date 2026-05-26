@@ -1,12 +1,13 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router-dom";
-import { Mail, Send, Trash2, UserCheck, Users } from "lucide-react";
+import { CreditCard, Mail, Send, Trash2, UserCheck, Users } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/lib/auth";
+import { useOpenBillingPortal } from "@/lib/billing";
 import { isSupabaseConfigured } from "@/lib/supabase";
 import { useTeamWorkspace } from "@/lib/team";
 import { TIER_BY_PLAN } from "@/lib/pricing";
@@ -15,6 +16,7 @@ export default function TeamPage() {
   const { user, profile, activeTeam, loading } = useAuth();
   const teamId = activeTeam?.id ?? null;
   const { snapshot, isLoading, invite, revoke } = useTeamWorkspace(teamId);
+  const openPortal = useOpenBillingPortal();
   const [email, setEmail] = useState("");
 
   if (loading) return null;
@@ -71,6 +73,14 @@ export default function TeamPage() {
             {activeTeam.seat_limit} seats · {activeTeam.claims_per_week_quota} claims / week
           </p>
         </div>
+        <Button
+          variant="outline"
+          disabled={openPortal.isPending}
+          onClick={() => openPortal.mutate()}
+        >
+          <CreditCard className="h-4 w-4" />
+          {openPortal.isPending ? "Opening…" : "Manage billing"}
+        </Button>
       </header>
 
       {isLoading || !snapshot ? (

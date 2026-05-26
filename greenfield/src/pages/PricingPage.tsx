@@ -1,20 +1,40 @@
-import { Check, Lock, Mail, Sparkles } from "lucide-react";
-import { Link } from "react-router-dom";
+import { useEffect } from "react";
+import { Check, CreditCard, Lock, Mail, Sparkles } from "lucide-react";
+import { Link, useSearchParams } from "react-router-dom";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/lib/auth";
+import { useOpenBillingPortal, useStartCheckout } from "@/lib/billing";
 import { SELF_SERVE_TIERS, TIER_BY_PLAN, type PricingTier } from "@/lib/pricing";
 
 export default function PricingPage() {
   const { user, profile } = useAuth();
   const currentPlan = profile?.plan;
+  const isPaying = !!currentPlan && currentPlan !== "scout";
+
+  const startCheckout = useStartCheckout();
+  const openPortal = useOpenBillingPortal();
+
+  const [searchParams, setSearchParams] = useSearchParams();
+  useEffect(() => {
+    const checkout = searchParams.get("checkout");
+    if (checkout === "success") {
+      toast.success("Payment confirmed — your plan will update within a few seconds.");
+      searchParams.delete("checkout");
+      searchParams.delete("session_id");
+      setSearchParams(searchParams, { replace: true });
+    } else if (checkout === "canceled") {
+      toast.info("Checkout canceled. Your plan didn't change.");
+      searchParams.delete("checkout");
+      setSearchParams(searchParams, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   function startUpgrade(tier: PricingTier) {
-    toast.info(
-      `${tier.name} checkout coming online shortly — message hello@greenfield.app and we'll get you set up.`,
-    );
+    if (tier.plan !== "entrepreneur" && tier.plan !== "venture_studio") return;
+    startCheckout.mutate(tier.plan);
   }
 
   return (
@@ -28,6 +48,23 @@ export default function PricingPage() {
         </p>
       </header>
 
+      {isPaying && (
+        <div className="mt-8 rounded-2xl border bg-card p-4 flex flex-wrap items-center justify-between gap-3">
+          <div className="text-sm">
+            <span className="font-medium">You're on the {(currentPlan && TIER_BY_PLAN[currentPlan]?.name) ?? currentPlan} plan.</span>
+            <span className="ml-2 text-muted-foreground">Manage your payment method, invoices, or cancel any time.</span>
+          </div>
+          <Button
+            variant="outline"
+            disabled={openPortal.isPending}
+            onClick={() => openPortal.mutate()}
+          >
+            <CreditCard className="h-4 w-4" />
+            {openPortal.isPending ? "Opening…" : "Manage billing"}
+          </Button>
+        </div>
+      )}
+
       <div className="mt-10 grid gap-6 md:grid-cols-3">
         {SELF_SERVE_TIERS.map((tier) => (
           <TierCard
@@ -35,6 +72,7 @@ export default function PricingPage() {
             tier={tier}
             isCurrent={currentPlan === tier.plan}
             ctaState={user ? "upgrade" : "signup"}
+            isPending={startCheckout.isPending && startCheckout.variables === tier.plan}
             onUpgrade={() => startUpgrade(tier)}
           />
         ))}
@@ -50,11 +88,12 @@ export default function PricingPage() {
 }
 
 function TierCard({
-  tier, isCurrent, ctaState, onUpgrade,
+  tier, isCurrent, ctaState, isPending, onUpgrade,
 }: {
   tier: PricingTier;
   isCurrent: boolean;
   ctaState: "upgrade" | "signup";
+  isPending: boolean;
   onUpgrade: () => void;
 }) {
   const showRecommendedChip = tier.highlight;
@@ -113,9 +152,14 @@ function TierCard({
             </Link>
           </Button>
         ) : (
-          <Button className="w-full" variant={tier.highlight ? "default" : "outline"} onClick={onUpgrade}>
+          <Button
+            className="w-full"
+            variant={tier.highlight ? "default" : "outline"}
+            onClick={onUpgrade}
+            disabled={isPending}
+          >
             <Sparkles className="h-4 w-4" />
-            {tier.cta}
+            {isPending ? "Redirecting…" : tier.cta}
           </Button>
         )}
         <p className="mt-2 text-center text-xs text-muted-foreground">

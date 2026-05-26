@@ -208,6 +208,59 @@ test.describe("Agents workspace", () => {
   });
 });
 
+test.describe("Workflows", () => {
+  test("/workflows lists library cards", async ({ page }) => {
+    await page.goto("/workflows");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/Workflow/i);
+    await expect(page.getByRole("heading", { name: /ICP wedge builder/i })).toBeVisible();
+  });
+
+  test("workflow detail renders steps + Run button (no claim)", async ({ page }) => {
+    await page.goto("/browse");
+    await page.evaluate(() => {
+      localStorage.removeItem("greenfield.claimedIdeas");
+      localStorage.removeItem("greenfield.activeClaimSlug");
+      localStorage.removeItem("greenfield.demoWorkflowRuns");
+    });
+
+    await page.goto("/workflows/icp-wedge-builder");
+    await expect(page.getByRole("heading", { level: 1 })).toContainText(/ICP wedge builder/i);
+    // Step cards
+    await expect(page.getByRole("heading", { name: /Agent handoff/i })).toBeVisible();
+    // Without a claim, the CTA renders as a link to /browse (Button asChild)
+    await expect(page.getByRole("link", { name: /Claim an idea to run this/i }).first()).toBeVisible();
+  });
+
+  test("Run button updates after claiming an idea", async ({ page }) => {
+    await page.goto("/browse");
+    await page.evaluate(() => {
+      localStorage.removeItem("greenfield.claimedIdeas");
+      localStorage.removeItem("greenfield.activeClaimSlug");
+      localStorage.removeItem("greenfield.demoWorkflowRuns");
+    });
+    await page.goto("/opportunity/solo-cpa-workflow-os");
+    await page.getByRole("button", { name: /^Claim idea$/ }).first().click();
+
+    await page.goto("/workflows/icp-wedge-builder");
+    await expect(page.getByRole("button", { name: /Run on Workflow OS for solo CPAs/i }).first()).toBeVisible();
+
+    // Cleanup
+    await page.evaluate(() => {
+      localStorage.removeItem("greenfield.claimedIdeas");
+      localStorage.removeItem("greenfield.activeClaimSlug");
+      localStorage.removeItem("greenfield.demoWorkflowRuns");
+    });
+  });
+});
+
+test.describe("Team workspace (/team)", () => {
+  test("/team shows the demo notice when Supabase isn't configured", async ({ page }) => {
+    await page.goto("/team");
+    await expect(page.getByRole("heading", { name: /Team workspace needs Supabase/i })).toBeVisible();
+    await expect(page.getByRole("link", { name: /See Venture Studio plan/i })).toBeVisible();
+  });
+});
+
 test.describe("Misc", () => {
   test("unknown route renders the 404", async ({ page }) => {
     await page.goto("/this-page-does-not-exist");

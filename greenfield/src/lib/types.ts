@@ -116,7 +116,7 @@ export type AgentToolCall = {
 export type AgentRun = {
   id: string;
   claim_id: string;
-  agent_role: "gtm" | "sales" | "marketing" | "engineering";
+  agent_role: "research" | "gtm" | "sales" | "marketing" | "engineering";
   status: AgentRunStatus;
   prompt: string;
   output_markdown: string | null;

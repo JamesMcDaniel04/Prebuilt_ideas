@@ -1,6 +1,6 @@
 import type { Opportunity } from "@/lib/types";
 
-export type AgentRole = "gtm" | "sales" | "marketing" | "engineering";
+export type AgentRole = "research" | "gtm" | "sales" | "marketing" | "engineering";
 
 export type ClaimedIdea = {
   /** Supabase idea_claims.id when persisted; absent in demo/localStorage mode. */
@@ -52,7 +52,7 @@ export type WorkflowTemplate = {
   slug: string;
   title: string;
   one_liner: string;
-  category: "GTM" | "Sales" | "Marketing" | "Engineering";
+  category: "Research" | "GTM" | "Sales" | "Marketing" | "Engineering";
   stage: "Foundation" | "Launch" | "Revenue" | "Retention";
   primary_agent: AgentRole;
   support_agents: AgentRole[];
@@ -87,9 +87,10 @@ export type WorkflowGuide = {
   body: string;
 };
 
-export const AGENT_ROLE_ORDER: AgentRole[] = ["gtm", "sales", "marketing", "engineering"];
+export const AGENT_ROLE_ORDER: AgentRole[] = ["research", "gtm", "sales", "marketing", "engineering"];
 
 export const AGENT_ROLE_LABEL: Record<AgentRole, string> = {
+  research: "Research",
   gtm: "GTM",
   sales: "Sales",
   marketing: "Marketing",

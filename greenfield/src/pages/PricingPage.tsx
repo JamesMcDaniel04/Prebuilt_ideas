@@ -37,7 +37,12 @@ export default function PricingPage() {
   }, [searchParams, setSearchParams, navigate, refreshProfile]);
 
   function startUpgrade(tier: PricingTier) {
-    if (tier.plan !== "entrepreneur" && tier.plan !== "builder" && tier.plan !== "venture_studio") return;
+    if (
+      tier.plan !== "entrepreneur" &&
+      tier.plan !== "builder" &&
+      tier.plan !== "career" &&
+      tier.plan !== "venture_studio"
+    ) return;
     startCheckout.mutate(tier.plan);
   }
 
@@ -69,7 +74,7 @@ export default function PricingPage() {
         </div>
       )}
 
-      <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {SELF_SERVE_TIERS.map((tier) => (
           <TierCard
             key={tier.plan}

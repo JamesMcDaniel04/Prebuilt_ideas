@@ -62,7 +62,9 @@ export default function OpportunityDetailPage() {
 
   const isPractice = isPracticeOpportunity(opp);
   const practiceMeta = practiceMetaForOpportunity(opp);
-  const backHref = isPractice ? "/practice" : "/browse";
+  // The old "Practice" surface was retired in favor of /career; practice-themed
+  // catalogue opportunities still exist but the back link goes to /browse.
+  const backHref = "/browse";
   const sections = isPractice
     ? [
         { title: "Workflow to improve", body: opp.the_gap },

@@ -51,7 +51,6 @@ export const TIERS: PricingTier[] = [
     priceLabel: "$197",
     per: "/ year",
     priceFootnote: "About $16/month",
-    highlight: true,
     tagline: "For serious founders ready to build.",
     features: [
       "Everything in Scout",
@@ -65,6 +64,7 @@ export const TIERS: PricingTier[] = [
     claims_per_week_quota: 1,
     claims_per_year_cap: 1,
     byo_runs_per_month_quota: 0,
+    career_runs_per_month_quota: 0,
   },
   {
     plan: "builder",
@@ -84,6 +84,28 @@ export const TIERS: PricingTier[] = [
     seat_limit: 1,
     claims_per_week_quota: 1,
     byo_runs_per_month_quota: 25,
+    career_runs_per_month_quota: 0,
+  },
+  {
+    plan: "career",
+    name: "Career",
+    priceLabel: "$199",
+    per: "/ year",
+    priceFootnote: "About $17/month",
+    tagline: "Become a verifiable AI Automation Specialist.",
+    features: [
+      "AI Automation Specialist track (5 hireable projects)",
+      "60 mentor + evaluator agent runs / month",
+      "Rubric-based grading with specific feedback",
+      "Verified public portfolio at /portfolio/your-name",
+      "Optional human review for borderline scores",
+    ],
+    highlight: true,
+    cta: "Start the track",
+    seat_limit: 1,
+    claims_per_week_quota: 0,
+    byo_runs_per_month_quota: 0,
+    career_runs_per_month_quota: 60,
   },
   {
     plan: "venture_studio",
@@ -104,6 +126,7 @@ export const TIERS: PricingTier[] = [
     seat_limit: 5,
     claims_per_week_quota: 10,
     byo_runs_per_month_quota: 100,
+    career_runs_per_month_quota: 60,
   },
   {
     plan: "university",
@@ -122,6 +145,7 @@ export const TIERS: PricingTier[] = [
     seat_limit: 25,
     claims_per_week_quota: 50,
     byo_runs_per_month_quota: 200,
+    career_runs_per_month_quota: 200,
   },
 ];
 

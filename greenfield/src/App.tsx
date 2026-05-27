@@ -1,12 +1,15 @@
-import { Routes, Route } from "react-router-dom";
+import { Navigate, Routes, Route } from "react-router-dom";
 
 import Layout from "@/components/layout/Layout";
 import MarketingLayout from "@/components/layout/MarketingLayout";
 import LandingPage from "@/pages/LandingPage";
 import PreviewOpportunityPage from "@/pages/PreviewOpportunityPage";
 import BrowsePage from "@/pages/BrowsePage";
-import PracticeIdeasPage from "@/pages/PracticeIdeasPage";
+import CareerPage from "@/pages/CareerPage";
+import CareerTrackPage from "@/pages/CareerTrackPage";
+import CareerProjectPage from "@/pages/CareerProjectPage";
 import OpportunityDetailPage from "@/pages/OpportunityDetailPage";
+// PracticeIdeasPage retired in favor of CareerPage; /practice now redirects to /career.
 import SavedPage from "@/pages/SavedPage";
 import AuthPage from "@/pages/AuthPage";
 import PricingPage from "@/pages/PricingPage";
@@ -23,6 +26,8 @@ import MyIdeasPage from "@/pages/MyIdeasPage";
 import MyIdeaDetailPage from "@/pages/MyIdeaDetailPage";
 import MyProjectsPage from "@/pages/MyProjectsPage";
 import MyProjectDetailPage from "@/pages/MyProjectDetailPage";
+import PortfolioSettingsPage from "@/pages/PortfolioSettingsPage";
+import PublicPortfolioPage from "@/pages/PublicPortfolioPage";
 
 export default function App() {
   return (
@@ -38,12 +43,21 @@ export default function App() {
         <Route path="/preview/:slug" element={<PreviewOpportunityPage />} />
         <Route path="/auth" element={<AuthPage />} />
         <Route path="/pricing" element={<PricingPage />} />
+        {/* Public verified portfolio — no auth required. */}
+        <Route path="/portfolio/:username" element={<PublicPortfolioPage />} />
       </Route>
 
       {/* App shell — sidebar + main. Members only. */}
       <Route element={<Layout />}>
         <Route path="/browse" element={<BrowsePage />} />
-        <Route path="/practice" element={<PracticeIdeasPage />} />
+        {/* /practice was the old Practice catalogue; Career replaces it. Old
+            bookmarks resolve via the redirect below. */}
+        <Route path="/practice" element={<Navigate to="/career" replace />} />
+        <Route path="/practice/:slug" element={<Navigate to="/career" replace />} />
+        <Route path="/career" element={<CareerPage />} />
+        <Route path="/career/:trackSlug" element={<CareerTrackPage />} />
+        <Route path="/career/:trackSlug/:projectSlug" element={<CareerProjectPage />} />
+        <Route path="/settings/portfolio" element={<PortfolioSettingsPage />} />
         <Route path="/opportunity/:slug" element={<OpportunityDetailPage />} />
         <Route path="/saved" element={<SavedPage />} />
         <Route path="/my-ideas" element={<MyIdeasPage />} />

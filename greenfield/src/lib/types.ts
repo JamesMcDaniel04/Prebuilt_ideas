@@ -136,7 +136,7 @@ export type WorkflowStep = {
   id: string;
   workflow_run_id: string;
   ordinal: number;
-  owner_role: "gtm" | "sales" | "marketing" | "engineering";
+  owner_role: "research" | "gtm" | "sales" | "marketing" | "engineering";
   title: string;
   description: string;
   status: WorkflowStepStatus;

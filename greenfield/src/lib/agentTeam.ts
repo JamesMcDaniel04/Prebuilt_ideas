@@ -9,6 +9,12 @@ import {
 type AgentBase = Omit<AgentPlan, "mission" | "instructions" | "handoff" | "success_metric" | "starter_prompt">;
 
 const BASE_TOOLS: Record<AgentRole, AgentTool[]> = {
+  research: [
+    { name: "Industry report search", purpose: "Pull current market sizing, growth rates, and segmentation from Gartner / IDC / McKinsey / Forrester / Statista." },
+    { name: "Competitor landscape scan", purpose: "Map direct, adjacent, and substitute competitors with positioning and recent product moves." },
+    { name: "Acquisitions and M&A radar", purpose: "Surface recent deals, acquirers, and consolidation patterns in the sector." },
+    { name: "Signal aggregator", purpose: "Cross-reference Reddit, HN, X, and niche forums for change signals the founder can exploit." },
+  ],
   gtm: [
     { name: "Greenfield brief", purpose: "Use the claimed idea research and build path as the source of truth." },
     { name: "Customer interview notes", purpose: "Refine ICP and validate what pain is expensive enough to prioritize." },
@@ -36,6 +42,15 @@ const BASE_TOOLS: Record<AgentRole, AgentTool[]> = {
 };
 
 export const AGENT_BASES: AgentBase[] = [
+  {
+    role: "research",
+    name: "Research Agent",
+    tagline: "Maps the industry, competitors, and M&A landscape upstream of execution.",
+    summary: "Builds the evidence base — market structure, competitor positioning, recent deals, and acquirer behavior — so the rest of the team executes against a real landscape, not a guess.",
+    allowed_tools: BASE_TOOLS.research,
+    deliverables: ["Competitive landscape brief", "M&A and acquirer radar", "Industry sizing memo", "Signal log with citations"],
+    workflow_slugs: ["competitive-landscape-brief", "ma-radar"],
+  },
   {
     role: "gtm",
     name: "GTM Agent",
@@ -83,6 +98,9 @@ function nicheLabel(claim: ClaimedIdea) {
 }
 
 function buildMission(role: AgentRole, claim: ClaimedIdea): string {
+  if (role === "research") {
+    return `Build the upstream evidence base for ${claim.title}: who else operates in ${nicheLabel(claim).toLowerCase()}, what has been acquired or merged in the last 24 months, and which industry signals justify acting now.`;
+  }
   if (role === "gtm") {
     return `Define the initial market wedge for ${claim.title} so the founder has one segment, one promise, and one launch motion to run in the next ${claim.time_to_launch.toLowerCase()}.`;
   }
@@ -104,6 +122,15 @@ function buildInstructions(role: AgentRole, claim: ClaimedIdea): string[] {
     `Prefer one narrow workflow, one measurable proof point, and one weekly operating cadence over broad strategy decks.`,
   ];
 
+  if (role === "research") {
+    return [
+      ...shared,
+      `Map the direct, adjacent, and substitute competitors for ${claim.title} with one-line positioning for each — flag which are funded, which are stalling, and which are recent entrants.`,
+      `Surface acquisitions, mergers, and notable funding rounds in ${nicheLabel(claim).toLowerCase()} from the last 24 months and identify the consolidating acquirers.`,
+      `Pull current market sizing and segmentation from named industry reports (Gartner / IDC / McKinsey / Forrester / Statista) and cite each source.`,
+      `End every brief with a "what this means for the wedge" handoff to GTM, not a research dump.`,
+    ];
+  }
   if (role === "gtm") {
     return [
       ...shared,
@@ -139,6 +166,7 @@ function buildInstructions(role: AgentRole, claim: ClaimedIdea): string[] {
 }
 
 function buildHandoff(role: AgentRole, claim: ClaimedIdea): string {
+  if (role === "research") return `Hands a cited landscape, M&A read, and "where the wedge is" recommendation to GTM so positioning and pricing land in a real market.`;
   if (role === "gtm") return `Hands the chosen wedge, pricing frame, and channel priorities to Sales and Marketing so ${claim.title} launches on one message.`;
   if (role === "sales") return `Feeds live objections, pilot requests, and close blockers back to GTM and Engineering so the offer tightens every week.`;
   if (role === "marketing") return `Turns call notes and customer proof into assets Sales can ship and GTM can test without waiting on a full campaign cycle.`;
@@ -146,6 +174,7 @@ function buildHandoff(role: AgentRole, claim: ClaimedIdea): string {
 }
 
 function buildSuccessMetric(role: AgentRole, claim: ClaimedIdea): string {
+  if (role === "research") return `A cited competitive landscape, a 24-month M&A read, and a sized opportunity that GTM can build the wedge on top of.`;
   if (role === "gtm") return `One clear ICP, one differentiated offer, and one acquisition lane the founder can run for ${claim.title} every week.`;
   if (role === "sales") return b2bMotion(claim)
     ? "Qualified design-partner conversations and a live objection log that improves close rates week over week."

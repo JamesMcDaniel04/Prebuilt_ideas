@@ -25,7 +25,8 @@ const MODEL          = "claude-sonnet-4-6";
 const MAX_TOKENS     = 4_000;
 const MAX_ITERATIONS = 8;
 
-const VALID_ROLES = new Set(["gtm", "sales", "marketing", "engineering"]);
+const VALID_ROLES = new Set(["research", "gtm", "sales", "marketing", "engineering"]);
+type AgentRole = "research" | "gtm" | "sales" | "marketing" | "engineering";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -66,7 +67,7 @@ Deno.serve(async (req: Request) => {
     return json({ error: "INVALID_INPUT", details: "claim_id, agent_role, and prompt are required" }, 400);
   }
   if (!VALID_ROLES.has(body.agent_role)) {
-    return json({ error: "INVALID_INPUT", details: "agent_role must be gtm | sales | marketing | engineering" }, 400);
+    return json({ error: "INVALID_INPUT", details: "agent_role must be research | gtm | sales | marketing | engineering" }, 400);
   }
 
   // Ownership: caller must belong to the claim's team
@@ -98,7 +99,7 @@ Deno.serve(async (req: Request) => {
   try {
     const result = await runAgentLoop({
       anthropicKey: ANTHROPIC_API_KEY,
-      agent_role: body.agent_role as "gtm" | "sales" | "marketing" | "engineering",
+      agent_role: body.agent_role as AgentRole,
       prompt: body.prompt,
       claim,
       admin,
@@ -141,6 +142,10 @@ Deno.serve(async (req: Request) => {
 // ─────────────────────────────────────────────────────────────────────────
 
 const ROLE_PERSONAS: Record<string, { name: string; mission: (c: ClaimShape) => string }> = {
+  research: {
+    name: "Research Agent",
+    mission: (c) => `Build the upstream evidence base for ${c.opportunities.title}: who else operates in ${(c.opportunities.niche ?? c.opportunities.industry).toLowerCase()}, what has been acquired or merged in the last 24 months, and which industry signals justify acting now.`,
+  },
   gtm: {
     name: "GTM Agent",
     mission: (c) => `Define the initial market wedge for ${c.opportunities.title} so the founder has one segment, one promise, and one launch motion to run in the next ${c.opportunities.time_to_launch.toLowerCase()}.`,
@@ -202,6 +207,7 @@ function buildSystemPrompt(role: string, claim: ClaimShape): string {
     "- Call `web_search` for fresh external info — only when internal context is insufficient.",
     "- Call `fetch_url` to read a specific source web_search surfaced.",
     "- Call `save_note` to record explicit handoffs to the other agents or to bookmark a finding.",
+    role === "research"    ? "- Call `landscape_competitors` for a wide (10–15) competitor map; `find_acquisitions` for M&A in the last 24 months; `find_industry_reports` for sized market data from named research firms." : "",
     role === "gtm"         ? "- Call `find_competitors` when you need a competitor list for positioning or pricing." : "",
     role === "sales"       ? "- Call `find_companies` when you need a target-account list — falls back to web_search if Apollo isn't configured." : "",
     role === "marketing"   ? "- Call `keyword_volume` to ground content/SEO bets in real demand numbers." : "",
@@ -211,7 +217,7 @@ function buildSystemPrompt(role: string, claim: ClaimShape): string {
     "- Return concrete work product, not generic advice.",
     "- Prefer bullets, tables, short scripts, and named next actions the founder can ship this week.",
     "- Cite any external claim with its source URL inline.",
-    "- End with a `## Handoffs` section listing follow-ups for the other three agents (GTM / Sales / Marketing / Engineering), each as a one-line directive.",
+    "- End with a `## Handoffs` section listing follow-ups for the other agents (Research / GTM / Sales / Marketing / Engineering), each as a one-line directive.",
   ].join("\n");
 }
 
@@ -228,7 +234,7 @@ type LoopResult = {
 
 async function runAgentLoop(args: {
   anthropicKey: string;
-  agent_role: "gtm" | "sales" | "marketing" | "engineering";
+  agent_role: AgentRole;
   prompt: string;
   claim: ClaimShape;
   // @ts-expect-error — Supabase service-role client typing is fine at runtime

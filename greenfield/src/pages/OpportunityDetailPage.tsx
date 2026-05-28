@@ -40,7 +40,7 @@ export default function OpportunityDetailPage() {
 
   if (isLoading) {
     return (
-      <div className="px-6 md:px-10 py-10 max-w-3xl">
+      <div className="mx-auto w-full px-6 md:px-10 py-10 max-w-3xl">
         <div className="h-8 w-2/3 animate-pulse rounded bg-muted" />
         <div className="mt-4 space-y-2">
           <div className="h-4 w-full animate-pulse rounded bg-muted" />
@@ -82,7 +82,7 @@ export default function OpportunityDetailPage() {
       ];
 
   return (
-    <article className="px-6 md:px-10 py-8 max-w-3xl">
+    <article className="mx-auto w-full px-6 md:px-10 py-8 max-w-3xl">
       <div className="flex items-center justify-between">
         <Link to={backHref} className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground">
           <ArrowLeft className="h-4 w-4" />

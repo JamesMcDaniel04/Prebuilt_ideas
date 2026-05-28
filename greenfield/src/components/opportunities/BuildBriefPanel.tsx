@@ -63,7 +63,16 @@ export default function BuildBriefPanel({ opportunityId, opportunitySlug, opport
         "generate-brief",
         { body: { opportunity_id: opportunityId, force: opts?.force } },
       );
-      if (error) throw error;
+      if (error) {
+        // supabase-js wraps the function's response body in error.context.
+        // Surface the real message instead of the generic "non-2xx".
+        const ctx = (error as { context?: Response }).context;
+        const detail = ctx ? await ctx.clone().json().catch(() => null) : null;
+        const msg = (detail && typeof detail === "object" && "error" in detail
+          ? String((detail as { error: unknown }).error)
+          : null) ?? error.message;
+        throw new Error(msg);
+      }
       if (!data?.markdown) throw new Error("No markdown returned");
       return data;
     },

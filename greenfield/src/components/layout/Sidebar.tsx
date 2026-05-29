@@ -1,9 +1,7 @@
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import {
-  Bookmark, Bot, Compass, GraduationCap, LayoutGrid, Lightbulb, LogOut, Mail, Rocket, ShieldCheck, Sparkles, User, Users, Workflow,
+  GraduationCap, LogOut, Mail, ShieldCheck, Sparkles, User, UserCheck,
 } from "lucide-react";
-
-import { TIER_BY_PLAN } from "@/lib/pricing";
 
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth";
@@ -12,9 +10,6 @@ import { Button } from "@/components/ui/button";
 export default function Sidebar() {
   const { user, profile, signOut } = useAuth();
   const navigate = useNavigate();
-  const isStudio = profile?.plan === "venture_studio" || profile?.plan === "university";
-  const plan = profile?.plan ?? "scout";
-  const byoUnlocked = (TIER_BY_PLAN[plan]?.byo_runs_per_month_quota ?? 0) > 0;
 
   return (
     <aside className="hidden md:flex w-60 shrink-0 flex-col border-r border-border bg-card/60">
@@ -27,33 +22,9 @@ export default function Sidebar() {
 
       {/* Primary nav */}
       <nav className="flex-1 space-y-0.5 px-3">
-        <Section label="Catalogue">
-          <Item to="/browse" icon={<Compass className="h-4 w-4" />}>Browse</Item>
-          <Item to="/career" icon={<GraduationCap className="h-4 w-4" />}>Career</Item>
-          <Item to="/saved" icon={<Bookmark className="h-4 w-4" />}>Saved</Item>
-        </Section>
-
-        <Section label="Execution">
-          <Item to="/agents" icon={<Bot className="h-4 w-4" />}>Agents</Item>
-          <Item to="/workflows" icon={<Workflow className="h-4 w-4" />}>Workflows</Item>
-          {isStudio && (
-            <Item to="/team" icon={<Users className="h-4 w-4" />}>Team</Item>
-          )}
-        </Section>
-
-        <Section label="Your work">
-          {byoUnlocked ? (
-            <>
-              <Item to="/my-ideas" icon={<Lightbulb className="h-4 w-4" />}>My Ideas</Item>
-              <Item to="/my-projects" icon={<Rocket className="h-4 w-4" />}>My Projects</Item>
-            </>
-          ) : (
-            <Item to="/pricing" icon={<Lightbulb className="h-4 w-4" />}>Unlock BYO</Item>
-          )}
-        </Section>
-
-        <Section label="External">
-          <Item to="/yc-requests" icon={<Rocket className="h-4 w-4" />}>YC Requests</Item>
+        <Section label="Learn">
+          <Item to="/career" icon={<GraduationCap className="h-4 w-4" />}>Career track</Item>
+          <Item to="/settings/portfolio" icon={<UserCheck className="h-4 w-4" />}>Portfolio</Item>
         </Section>
 
         <Section label="Account">
@@ -62,12 +33,6 @@ export default function Sidebar() {
             <Item to="/auth?mode=signin" icon={<User className="h-4 w-4" />}>Sign in</Item>
           )}
         </Section>
-
-        {profile?.is_admin && (
-          <Section label="Workspace">
-            <Item to="/admin" icon={<LayoutGrid className="h-4 w-4" />}>Admin</Item>
-          </Section>
-        )}
       </nav>
 
       {/* Footer: status + user */}
@@ -76,7 +41,7 @@ export default function Sidebar() {
           <div className="flex items-center gap-2 rounded-md bg-accent/10 px-2.5 py-1.5 text-xs">
             <Sparkles className="h-3.5 w-3.5 text-accent-foreground" />
             <span className="font-medium">Member</span>
-            <span className="text-muted-foreground">— briefs unlocked</span>
+            <span className="text-muted-foreground">— track unlocked</span>
           </div>
         ) : user ? (
           <Button asChild size="sm" variant="outline" className="w-full justify-start">
@@ -179,9 +144,6 @@ export function MobileTopBar() {
       <div className="flex items-center gap-2">
         <Button variant="ghost" size="sm" asChild>
           <Link to="/career" aria-label="Career"><GraduationCap className="h-4 w-4" /></Link>
-        </Button>
-        <Button variant="ghost" size="sm" asChild>
-          <Link to="/saved" aria-label="Saved"><Bookmark className="h-4 w-4" /></Link>
         </Button>
         {!user && (
           <Button size="sm" asChild>

@@ -6,7 +6,7 @@ import MissingConfigBanner from "./MissingConfigBanner";
 
 /**
  * Public-facing shell — top nav + footer, no sidebar. Used for the landing page,
- * the public opportunity previews, /auth, and /pricing. Members-only routes use
+ * public verified portfolios, /auth, and /pricing. Members-only routes use
  * the sidebar Layout instead. Marketing surfaces NEVER deep-link into the
  * sidebar app — the platform is gated behind a paid subscription.
  */
@@ -72,7 +72,7 @@ export default function MarketingLayout() {
               <span className="font-display text-lg tracking-tight">Greenfield</span>
             </Link>
             <p className="mt-3 max-w-xs text-muted-foreground">
-              A curated catalogue of startup opportunities and AI-friendly practice builds, each with a brief you can ship with your coding agent.
+              A project-based AI career platform. Build real systems, get graded against a rubric, and graduate with a verified portfolio you can use to get hired.
             </p>
           </div>
 
@@ -91,8 +91,8 @@ export default function MarketingLayout() {
           </FooterCol>
         </div>
         <div className="container-wide flex flex-col gap-2 border-t border-border/60 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Greenfield. A catalogue of the unbuilt.</p>
-          <p>Made for founders shipping with Claude Code, Cursor, and Codex.</p>
+          <p>© {new Date().getFullYear()} Greenfield. Build it, prove it, get hired.</p>
+          <p>Project-based AI training with rubric-graded, verified portfolios.</p>
         </div>
       </footer>
     </div>

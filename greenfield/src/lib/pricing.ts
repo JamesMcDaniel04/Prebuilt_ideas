@@ -3,10 +3,10 @@ import type { PlanTier } from "@/lib/types";
 export type PricingTier = {
   plan: PlanTier;
   name: string;
-  /** Display price like "$197". */
+  /** Display price like "$199". */
   priceLabel: string;
   per: string;
-  /** Optional sub-line under the price (e.g. "That's just $16/month"). */
+  /** Optional sub-line under the price (e.g. "About $17/month"). */
   priceFootnote?: string;
   tagline: string;
   features: string[];
@@ -16,150 +16,37 @@ export type PricingTier = {
   contactOnly?: boolean;
   cta: string;
   seat_limit: number;
-  claims_per_week_quota: number;
-  /** Lifetime claim cap, if any (Entrepreneur is gated this way; others use weekly). */
-  claims_per_year_cap?: number;
-  /** Included BYO (user-submitted ideas/projects) agent runs per month. 0 means BYO is locked. */
-  byo_runs_per_month_quota: number;
   /** Included Career-track agent runs (mentor + evaluator) per month. 0 means Career is locked. */
   career_runs_per_month_quota: number;
 };
 
-export const TIERS: PricingTier[] = [
-  {
-    plan: "scout",
-    name: "Scout",
-    priceLabel: "$97",
-    per: "/ year",
-    priceFootnote: "About $8/month",
-    tagline: "For founders searching for the right idea.",
-    features: [
-      "All 3,000+ opportunities and full briefs",
-      "Every filter — method, audience, capital, time",
-      "Special categories including YC Requests",
-      "New opportunities added weekly",
-    ],
-    cta: "Get instant access",
-    seat_limit: 1,
-    claims_per_week_quota: 0,
-    byo_runs_per_month_quota: 0,
-    career_runs_per_month_quota: 0,
-  },
-  {
-    plan: "entrepreneur",
-    name: "Entrepreneur",
-    priceLabel: "$197",
-    per: "/ year",
-    priceFootnote: "About $16/month",
-    tagline: "For serious founders ready to build.",
-    features: [
-      "Everything in Scout",
-      "1 idea claim per year — exclusive to you",
-      "Claimed ideas disappear from everyone else's catalogue",
-      "Run GTM, Sales, Marketing, and Engineering agents on your claimed idea",
-      "Additional claims available for purchase",
-    ],
-    cta: "Get instant access",
-    seat_limit: 1,
-    claims_per_week_quota: 1,
-    claims_per_year_cap: 1,
-    byo_runs_per_month_quota: 0,
-    career_runs_per_month_quota: 0,
-  },
-  {
-    plan: "builder",
-    name: "Builder",
-    priceLabel: "$497",
-    per: "/ year",
-    priceFootnote: "About $42/month",
-    tagline: "For founders bringing their own idea or project.",
-    features: [
-      "Everything in Entrepreneur",
-      "Bring your own ideas — kept private to your workspace",
-      "Bring your own in-flight projects (repo, deploy URL, current metrics)",
-      "25 BYO agent runs per month across the 5-agent team",
-      "All 5 agents — Research, GTM, Sales, Marketing, Engineering",
-    ],
-    cta: "Get instant access",
-    seat_limit: 1,
-    claims_per_week_quota: 1,
-    byo_runs_per_month_quota: 25,
-    career_runs_per_month_quota: 0,
-  },
-  {
-    plan: "career",
-    name: "Career",
-    priceLabel: "$199",
-    per: "/ year",
-    priceFootnote: "About $17/month",
-    tagline: "Become a verifiable AI Automation Specialist.",
-    features: [
-      "AI Automation Specialist track (5 hireable projects)",
-      "60 mentor + evaluator agent runs / month",
-      "Rubric-based grading with specific feedback",
-      "Verified public portfolio at /portfolio/your-name",
-      "Optional human review for borderline scores",
-    ],
-    highlight: true,
-    cta: "Start the track",
-    seat_limit: 1,
-    claims_per_week_quota: 0,
-    byo_runs_per_month_quota: 0,
-    career_runs_per_month_quota: 60,
-  },
-  {
-    plan: "venture_studio",
-    name: "Venture Studio",
-    priceLabel: "$12,000",
-    per: "/ year",
-    priceFootnote: "$1,000/month",
-    tagline: "For teams launching multiple startups in parallel.",
-    features: [
-      "Everything in Entrepreneur",
-      "Up to 5 team seats, shared workspace",
-      "10 idea claims per week, pooled across the team",
-      "Custom weekly research requests",
-      "Priority support and dedicated onboarding",
-    ],
-    contactOnly: true,
-    cta: "Contact sales",
-    seat_limit: 5,
-    claims_per_week_quota: 10,
-    byo_runs_per_month_quota: 100,
-    career_runs_per_month_quota: 60,
-  },
-  {
-    plan: "university",
-    name: "University & Accelerator",
-    priceLabel: "Custom",
-    per: "",
-    tagline: "For programs and institutions.",
-    features: [
-      "Bulk student or cohort account creation",
-      "Workshops and mentoring",
-      "Curriculum support and integration",
-      "Co-branded reporting and analytics",
-    ],
-    contactOnly: true,
-    cta: "Contact us",
-    seat_limit: 25,
-    claims_per_week_quota: 50,
-    byo_runs_per_month_quota: 200,
-    career_runs_per_month_quota: 200,
-  },
-];
+export const CAREER_TIER: PricingTier = {
+  plan: "career",
+  name: "Career",
+  priceLabel: "$199",
+  per: "/ year",
+  priceFootnote: "About $17/month",
+  tagline: "Become a verifiable AI Automation Specialist.",
+  features: [
+    "AI Automation Specialist track (5 hireable projects)",
+    "60 mentor + evaluator agent runs / month",
+    "Rubric-based grading with specific feedback",
+    "Verified public portfolio at /portfolio/your-name",
+    "Optional human review for borderline scores",
+  ],
+  highlight: true,
+  cta: "Start the track",
+  seat_limit: 1,
+  career_runs_per_month_quota: 60,
+};
 
-export const TIER_BY_PLAN: Record<PlanTier, PricingTier> = TIERS.reduce(
+export const TIERS: PricingTier[] = [CAREER_TIER];
+
+/** Partial — a plan with no paid tier (e.g. the free `scout` default) returns undefined. */
+export const TIER_BY_PLAN: Partial<Record<PlanTier, PricingTier>> = TIERS.reduce(
   (acc, t) => {
     acc[t.plan] = t;
     return acc;
   },
-  {} as Record<PlanTier, PricingTier>,
+  {} as Partial<Record<PlanTier, PricingTier>>,
 );
-
-/** Tiers shown side-by-side at the top of the pricing grid (not University). */
-export const SELF_SERVE_TIERS = TIERS.filter((t) => t.plan !== "university");
-
-export function planAllowsClaiming(plan: PlanTier): boolean {
-  return (TIER_BY_PLAN[plan]?.claims_per_week_quota ?? 0) > 0;
-}

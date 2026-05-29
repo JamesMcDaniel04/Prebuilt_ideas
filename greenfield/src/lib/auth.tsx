@@ -9,10 +9,7 @@ type AuthValue = {
   session: Session | null;
   profile: Profile | null;
   teams: Team[];
-  /**
-   * The team a claim action should go through. Prefers a Venture Studio team
-   * the user is a member of (best quota), otherwise the personal team.
-   */
+  /** The team Career usage is tracked against — the user's personal team. */
   activeTeam: Team | null;
   loading: boolean;
   refreshProfile: () => Promise<void>;
@@ -23,8 +20,6 @@ const AuthContext = createContext<AuthValue | null>(null);
 
 function pickActiveTeam(profile: Profile | null, teams: Team[]): Team | null {
   if (teams.length === 0) return null;
-  const studio = teams.find((t) => t.plan === "venture_studio");
-  if (studio) return studio;
   const personal = teams.find((t) => t.id === profile?.personal_team_id);
   return personal ?? teams[0];
 }
